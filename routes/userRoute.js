@@ -14,13 +14,7 @@ const db = mongoose.connection;
 
 userRoute.get("/test", getFields.none(), async (request, response) => {
     try {
-        console.log("여기??");
-        // console.log(request.headers.cookie);
-        
-        
-        
-        
-
+        // console.log("여기??");
         response.send({
             user:{
                 name:'test'
@@ -97,7 +91,7 @@ userRoute.post("/signin", getFields.none(), async (request, response) => {
 
         }
 
-        console.log(sendObj);
+        // console.log(sendObj);
         response.status(200).send({
             sendObj
         });
@@ -458,27 +452,6 @@ userRoute.get("/logout", getFields.none(), async (request, response) => {
         console.log(error);
         response.status(500).send(error);
     }
-    
-
-
-    /*
-    const refreshToken = await verifyRefreshTokenData(request.cookies.refreshtoken);
-    console.log(refreshToken);
-    if(refreshToken === false){
-        return res.status(200).json(falseResponseData(500))
-    }
-    // const logout = await authService.logout(refreshToken.user.id);
-
-    res.clearCookie('refreshtoken')
-    // res.clearCookie('rft')
-
-    return res.status(200).json({
-        success: true,
-        message: '로그아웃에 성공했습니다.'
-    });
-    */
-
-
 });
 
 

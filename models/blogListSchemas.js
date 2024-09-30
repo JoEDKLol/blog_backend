@@ -4,12 +4,12 @@ const BlogListSchema = mongoose.Schema({
     user_id : {
         type: mongoose.Schema.ObjectId,
         required: true,
-        index:{unique:true}
+        index:true
     },
     blog_id : {
         type: mongoose.Schema.ObjectId,
         required: true,
-        index:{unique:true}
+        index:true
     },
     m_category_id : {
         type: mongoose.Schema.ObjectId,
@@ -20,6 +20,9 @@ const BlogListSchema = mongoose.Schema({
         required: true,
     },
     title : {
+        type: String,
+    },
+    pic : {             //first pic url
         type: String,
     },
     content : {

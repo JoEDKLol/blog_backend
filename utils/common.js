@@ -1,4 +1,5 @@
 
+const mainBoardSPage = 5;
 
 function sendObjSet(code, resObj) {
     const obj = {
@@ -113,10 +114,16 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2100"){
+        arr.push("get bloglist success"); 
+        arr.push("n"); 
+    }
 
-    
+    if(code==="2101"){
+        arr.push("get bloglist fail"); 
+        arr.push("n"); 
+    }
 
-    
     return arr
 }
 
@@ -135,3 +142,4 @@ const getRandomNumber = (n) => {
 
 module.exports.sendObjSet = sendObjSet;
 module.exports.getRandomNumber = getRandomNumber;
+module.exports.mainBoardSPage = mainBoardSPage;

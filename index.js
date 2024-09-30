@@ -11,6 +11,7 @@ let corspolicy = {
 }
 
 const userRouter = require('./routes/userRoute')
+const blogRouter = require('./routes/blogRoute')
 
 const app = express()
 
@@ -41,7 +42,8 @@ const db = module.exports = () => {
 
 db();
 
-app.use('/',userRouter)
+app.use('/',userRouter);
+app.use('/blog',blogRouter);
 
 
 
