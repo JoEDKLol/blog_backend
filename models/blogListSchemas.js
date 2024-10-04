@@ -6,10 +6,15 @@ const BlogListSchema = mongoose.Schema({
         required: true,
         index:true
     },
-    blog_id : {
-        type: mongoose.Schema.ObjectId,
+    blog_seq : {
+        type: Number,
         required: true,
         index:true
+    },
+    seq:{
+        type: Number,
+        required: true,
+        index:true,
     },
     m_category_id : {
         type: mongoose.Schema.ObjectId,
@@ -31,6 +36,12 @@ const BlogListSchema = mongoose.Schema({
     public : {          //게시물 공개 여부
         type: String,
     },
+    hashtag : [
+        {
+            type: String,
+            index: true,
+        }
+    ],
     deleteyn : {
         type: String,
         default: "n"

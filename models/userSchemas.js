@@ -10,11 +10,9 @@ const UserSchema = mongoose.Schema({
     },
     name : {
         type: String,
-        required: true
     },
     password : {
         type: String,
-        required: true
     },
     blogid : {
         type: mongoose.Schema.ObjectId,

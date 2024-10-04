@@ -9,8 +9,10 @@ const SubCategories = require("../models/subCategorySchemas");
 const BlogLists = require("../models/blogListSchemas");
 const ObjectId = require("mongoose").Types.ObjectId;
 const commonModules = require("../utils/common");
-const { default: mongoose } = require('mongoose')
+const { default: mongoose } = require('mongoose');
 const db = mongoose.connection;
+
+const sequence = require("../utils/sequences");
 
 blogRoute.get("/test", getFields.none(), async (request, response) => {
     try {
@@ -49,7 +51,13 @@ blogRoute.get("/bloglist", getFields.none(), async (request, response) => {
         if(!bloglist){
             sendObj = commonModules.sendObjSet("2101");
         }else{
-            sendObj = commonModules.sendObjSet("2100", bloglist);
+
+            let addObj = {
+                currentPage:currentPage,
+                list:bloglist
+            }
+
+            sendObj = commonModules.sendObjSet("2100", addObj);
         }
         response.send({
             sendObj
@@ -62,6 +70,20 @@ blogRoute.get("/bloglist", getFields.none(), async (request, response) => {
 });
 
 
+blogRoute.get("/sequenceTest", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
 
+        const test = await sequence.getSequence("blog_seq");
+        sendObj.squence = test;
+        response.send({
+            sendObj
+        });
+
+    } catch (error) {
+        // console.log(error);
+        response.status(500).send(error);
+    }
+});
 
 module.exports=blogRoute

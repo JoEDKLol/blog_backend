@@ -1,5 +1,5 @@
 
-const mainBoardSPage = 5;
+const mainBoardSPage = 9;
 
 function sendObjSet(code, resObj) {
     const obj = {
@@ -15,7 +15,7 @@ function returnCodeContents(code){
     let arr = [];
     
     if(code==="1000"){ 
-        arr.push("email duplecate"); 
+        arr.push("signup success"); 
         arr.push("y"); 
     }
 

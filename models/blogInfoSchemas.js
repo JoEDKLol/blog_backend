@@ -6,7 +6,14 @@ const BlogInfoSchema = mongoose.Schema({
         required: true,
         index:{unique:true}
     },
+    seq:{
+        type: Number,
+        index:true,
+    },
     blogtitle : {
+        type: String,
+    },
+    blogimg_thumbnailimg : {
         type: String,
     },
     blogimg : {

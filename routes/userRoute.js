@@ -10,7 +10,7 @@ const commonModules = require("../utils/common");
 const jwtModules = require("../utils/jwtmodule");
 const { default: mongoose } = require('mongoose')
 const db = mongoose.connection;
-
+const sequence = require("../utils/sequences");
 
 userRoute.get("/test", getFields.none(), async (request, response) => {
     try {
@@ -108,37 +108,10 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
         
         let userData = await Users.findOne({email:request.body.email});
         
-        if(!userData){
-            sendObj = commonModules.sendObjSet("1051");
-        }else{
-            const refreshtoken = jwtModules.retFreshToken(userData._id, userData.email);
-            const userObj = {
-                id:userData._id,
-                email:userData.email
-            }
-            response.setHeader("refreshtoken", refreshtoken);
-            sendObj = commonModules.sendObjSet("1050", userObj);
-        }
-
-        console.log(sendObj);
-        
-        response.status(200).send({
-            sendObj
-        });
-
-    }catch (error) {
-        response.status(500).send(error);
-    }
-
-});
-userRoute.post("/signup", getFields.none(), async (request, response) => {
-    try {
-        //01. email duplicate check
-        let userData = await Users.findOne({email:request.body.email});
-        let sendObj = {};
-        if(!userData){
-            sendObj = commonModules.sendObjSet("1000"); 
+        if(!userData){ //new user register
             //blogId
+            let blogSeq = await sequence.getSequence("blog_seq");
+            
             const session = await db.startSession();
             // 2. 트렌젝션 시작
             session.startTransaction();
@@ -146,6 +119,7 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
             // 3. 
             const blogObj = {
                 email:request.body.email,
+                seq:blogSeq,
                 reguser:request.body.email,
                 upduser:request.body.email
             }
@@ -164,6 +138,76 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
             await session.commitTransaction();
             // 5. 세션 끝내기
             session.endSession();
+
+            const refreshtoken = jwtModules.retFreshToken(resusers._id, resusers.email);
+            const userObj = {
+                id:resusers._id,
+                email:resusers.email
+            }
+            console.log(userObj);
+            response.setHeader("refreshtoken", refreshtoken);
+            sendObj = commonModules.sendObjSet("1050", userObj);
+            
+        }else{
+            const refreshtoken = jwtModules.retFreshToken(userData._id, userData.email);
+            const userObj = {
+                id:userData._id,
+                email:userData.email
+            }
+            response.setHeader("refreshtoken", refreshtoken);
+            sendObj = commonModules.sendObjSet("1050", userObj);
+        }
+
+        console.log(sendObj);
+        
+        response.status(200).send({
+            sendObj
+        });
+
+    }catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+
+});
+userRoute.post("/signup", getFields.none(), async (request, response) => {
+    try {
+        //01. email duplicate check
+        let userData = await Users.findOne({email:request.body.email});
+        let sendObj = {};
+        
+        
+        if(!userData){
+            //blogId
+            let blogSeq = await sequence.getSequence("blog_seq");
+
+            const session = await db.startSession();
+            // 2. 트렌젝션 시작
+            session.startTransaction();
+            
+            // 3. 
+            const blogObj = {
+                email:request.body.email,
+                seq:blogSeq,
+                reguser:request.body.email,
+                upduser:request.body.email
+            }
+
+            const newBlogInfos =new BlogInfos(blogObj);
+            let resBloginfos=await newBlogInfos.save();
+            
+            request.body.reguser = request.body.email;
+            request.body.upduser = request.body.email;
+            request.body.blogid = resBloginfos._id;
+
+            const newUsers =new Users(request.body);
+            let resusers=await newUsers.save();
+            
+            // 4. commit
+            await session.commitTransaction();
+            // 5. 세션 끝내기
+            session.endSession();
+            sendObj = commonModules.sendObjSet("1000"); 
             
         }else{
             sendObj = commonModules.sendObjSet("1001"); //email duplecate
@@ -214,7 +258,7 @@ userRoute.post("/emailverify", getFields.none(), async (request, response) => {
                 const diffMSec = currentDate.getTime() - searchDate.getTime()
                 const diffMin = diffMSec / (1000);
 
-                if(diffMin < 30){ //3분 미만
+                if(diffMin < 180){ //3분 미만
                     sendObj = commonModules.sendObjSet("1012");
                 }else{
                     const emailVObj = {
@@ -433,7 +477,6 @@ userRoute.post("/checkaccessToken", getFields.none(), async (request, response) 
 
 userRoute.get("/logout", getFields.none(), async (request, response) => {
     
-    console.log(request.cookies.refreshtoken);
     let sendObj = {};
     try {
         const refreshToken = jwtModules.checkRefreshToken(request.cookies.refreshtoken);
