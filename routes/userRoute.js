@@ -111,7 +111,9 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
         if(!userData){ //new user register
             //blogId
             let blogSeq = await sequence.getSequence("blog_seq");
-            
+            let userEmail = request.body.email;
+            let emailpre = userEmail.substring(0, userEmail.indexOf("@"));
+
             const session = await db.startSession();
             // 2. 트렌젝션 시작
             session.startTransaction();
@@ -120,6 +122,7 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
             const blogObj = {
                 email:request.body.email,
                 seq:blogSeq,
+                name:emailpre,
                 reguser:request.body.email,
                 upduser:request.body.email
             }
@@ -180,6 +183,8 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
         if(!userData){
             //blogId
             let blogSeq = await sequence.getSequence("blog_seq");
+            let userEmail = request.body.email;
+            let emailpre = userEmail.substring(0, userEmail.indexOf("@"));
 
             const session = await db.startSession();
             // 2. 트렌젝션 시작
@@ -189,6 +194,7 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
             const blogObj = {
                 email:request.body.email,
                 seq:blogSeq,
+                name:emailpre,
                 reguser:request.body.email,
                 upduser:request.body.email
             }

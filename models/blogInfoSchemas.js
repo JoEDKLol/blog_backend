@@ -10,7 +10,13 @@ const BlogInfoSchema = mongoose.Schema({
         type: Number,
         index:true,
     },
+    name : {
+        type: String,
+    },
     blogtitle : {
+        type: String,
+    },
+    introduction : {
         type: String,
     },
     blogimg_thumbnailimg : {

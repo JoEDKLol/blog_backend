@@ -124,6 +124,16 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2110"){
+        arr.push("get blogInfo success"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2111"){
+        arr.push("get blogInfo fail"); 
+        arr.push("n"); 
+    }
+
     return arr
 }
 

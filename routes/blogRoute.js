@@ -69,13 +69,54 @@ blogRoute.get("/bloglist", getFields.none(), async (request, response) => {
     }
 });
 
+blogRoute.get("/blogInfo", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+        
+        let BlogInfo = await BlogInfos.findOne({blog_seq:request.params.blog_seq});
+        
+        if(!BlogInfo){
+            sendObj = commonModules.sendObjSet("2111");
+        }else{
+            sendObj = commonModules.sendObjSet("2110", BlogInfo);
+        }
+        response.send({
+            sendObj
+        });
 
-blogRoute.get("/sequenceTest", getFields.none(), async (request, response) => {
+    } catch (error) {
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.get("/bloglistEa", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
 
-        const test = await sequence.getSequence("blog_seq");
-        sendObj.squence = test;
+        const currentPage = request.query.currentPage;
+        const pageListCnt = commonModules.mainBoardSPage
+        const skipPage = pageListCnt*(currentPage-1);
+        const keyword = request.params.keyword;
+
+        let bloglist = await BlogLists.find({
+            deleteyn:'n'
+        })
+        .sort({regdate:-1})
+        .skip(skipPage)
+        .limit(pageListCnt);
+        
+        // const updateBlog = await BlogLists.updateMany({deleteyn:'n'});
+        if(!bloglist){
+            sendObj = commonModules.sendObjSet("2101");
+        }else{
+
+            let addObj = {
+                currentPage:currentPage,
+                list:bloglist
+            }
+
+            sendObj = commonModules.sendObjSet("2100", addObj);
+        }
         response.send({
             sendObj
         });
@@ -85,5 +126,22 @@ blogRoute.get("/sequenceTest", getFields.none(), async (request, response) => {
         response.status(500).send(error);
     }
 });
+
+
+// blogRoute.get("/sequenceTest", getFields.none(), async (request, response) => {
+//     try {
+//         let sendObj = {};
+
+//         const test = await sequence.getSequence("blog_seq");
+//         sendObj.squence = test;
+//         response.send({
+//             sendObj
+//         });
+
+//     } catch (error) {
+//         // console.log(error);
+//         response.status(500).send(error);
+//     }
+// });
 
 module.exports=blogRoute
