@@ -62,7 +62,8 @@ userRoute.post("/signin", getFields.none(), async (request, response) => {
                     const refreshtoken = jwtModules.retFreshToken(userData._id, userData.email);
                     const userObj = {
                         id:userData._id,
-                        email:userData.email
+                        email:userData.email,
+                        blog_seq:userData.blog_seq
                     }
                     //accesstoken, refreshtoken 헤더에 셋팅
                     // response.setHeader("accesstoken", accesstoken);
@@ -132,7 +133,8 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
             
             request.body.reguser = request.body.email;
             request.body.upduser = request.body.email;
-            request.body.blogid = resBloginfos._id;
+            request.body.blog_id = resBloginfos._id;
+            request.body.blog_seq = resBloginfos.seq;
 
             const newUsers =new Users(request.body);
             let resusers=await newUsers.save();
@@ -145,7 +147,8 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
             const refreshtoken = jwtModules.retFreshToken(resusers._id, resusers.email);
             const userObj = {
                 id:resusers._id,
-                email:resusers.email
+                email:resusers.email,
+                blog_seq:resusers.blog_seq
             }
             console.log(userObj);
             response.setHeader("refreshtoken", refreshtoken);
@@ -155,7 +158,9 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
             const refreshtoken = jwtModules.retFreshToken(userData._id, userData.email);
             const userObj = {
                 id:userData._id,
-                email:userData.email
+                email:userData.email,
+                blog_seq:userData.blog_seq
+                
             }
             response.setHeader("refreshtoken", refreshtoken);
             sendObj = commonModules.sendObjSet("1050", userObj);
@@ -204,7 +209,8 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
             
             request.body.reguser = request.body.email;
             request.body.upduser = request.body.email;
-            request.body.blogid = resBloginfos._id;
+            request.body.blog_id = resBloginfos._id;
+            request.body.blog_seq = resBloginfos.seq;
 
             const newUsers =new Users(request.body);
             let resusers=await newUsers.save();
@@ -419,6 +425,7 @@ userRoute.get("/getAccessToken", getFields.none(), async (request, response) => 
                     const userObj = {
                         id:userData._id
                         , email:userData.email
+                        , blog_seq:userData.blog_seq
                     }
                     sendObj = commonModules.sendObjSet("2000", userObj);
                     const accesstoken = jwtModules.retAccessToken(userData._id, userData.email);
@@ -461,6 +468,7 @@ userRoute.post("/checkaccessToken", getFields.none(), async (request, response) 
                     const userObj = {
                         id:userData._id
                         , email:userData.email
+                        , blog_seq:userData.blog_seq
                     }
                     sendObj = commonModules.sendObjSet("2010", userObj);
                     

@@ -14,8 +14,12 @@ const UserSchema = mongoose.Schema({
     password : {
         type: String,
     },
-    blogid : {
+    blog_id : {
         type: mongoose.Schema.ObjectId,
+        index:{unique:false}
+    },
+    blog_seq : {
+        type: Number,
         index:{unique:false}
     },
     loginattemptscnt : {

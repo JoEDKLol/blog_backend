@@ -134,6 +134,16 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2120"){
+        arr.push("get bloglistEa success"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2121"){
+        arr.push("get bloglistEa fail"); 
+        arr.push("n"); 
+    }
+
     return arr
 }
 

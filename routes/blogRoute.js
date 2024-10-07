@@ -96,10 +96,13 @@ blogRoute.get("/bloglistEa", getFields.none(), async (request, response) => {
         const currentPage = request.query.currentPage;
         const pageListCnt = commonModules.mainBoardSPage
         const skipPage = pageListCnt*(currentPage-1);
-        const keyword = request.params.keyword;
+        const keyword = request.query.keyword;
+        const blogSeq = Number(request.query.blog_seq);
 
         let bloglist = await BlogLists.find({
+            blog_seq:blogSeq,
             deleteyn:'n'
+            
         })
         .sort({regdate:-1})
         .skip(skipPage)
@@ -107,7 +110,7 @@ blogRoute.get("/bloglistEa", getFields.none(), async (request, response) => {
         
         // const updateBlog = await BlogLists.updateMany({deleteyn:'n'});
         if(!bloglist){
-            sendObj = commonModules.sendObjSet("2101");
+            sendObj = commonModules.sendObjSet("2120");
         }else{
 
             let addObj = {
@@ -115,14 +118,14 @@ blogRoute.get("/bloglistEa", getFields.none(), async (request, response) => {
                 list:bloglist
             }
 
-            sendObj = commonModules.sendObjSet("2100", addObj);
+            sendObj = commonModules.sendObjSet("2121", addObj);
         }
         response.send({
             sendObj
         });
 
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         response.status(500).send(error);
     }
 });
