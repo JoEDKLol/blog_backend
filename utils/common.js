@@ -144,6 +144,16 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2130"){
+        arr.push("fileUpload success"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2131"){
+        arr.push("get fileUpload fail"); 
+        arr.push("n"); 
+    }
+
     return arr
 }
 

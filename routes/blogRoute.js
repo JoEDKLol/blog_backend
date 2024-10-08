@@ -130,6 +130,29 @@ blogRoute.get("/bloglistEa", getFields.none(), async (request, response) => {
     }
 });
 
+const upload = multer({
+    dest: "uploads/"
+});
+
+blogRoute.post("/fileUpload", upload.single("userfile"), async (request, response) => {
+
+    try {
+        let sendObj = {};
+        // console.log(request);
+        
+
+        // sendObj = commonModules.sendObjSet("2120", addObj);
+        
+        response.send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
 
 // blogRoute.get("/sequenceTest", getFields.none(), async (request, response) => {
 //     try {
