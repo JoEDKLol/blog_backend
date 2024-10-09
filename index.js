@@ -13,6 +13,10 @@ let corspolicy = {
 const userRouter = require('./routes/userRoute')
 const blogRouter = require('./routes/blogRoute')
 
+const path = require("path");
+const publicPath = path.join(__dirname, "uploads"); //정적파일 로드 
+
+
 const app = express()
 
 app.use(express.json());
@@ -26,6 +30,9 @@ app.use(
 app.use(cors(corspolicy));
 app.use(cookieParser());
 // app.use(cookieParser('1234'));
+
+app.use(express.static(publicPath));
+
 const db = module.exports = () => {
 
   try{

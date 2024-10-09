@@ -13,6 +13,7 @@ const { default: mongoose } = require('mongoose');
 const db = mongoose.connection;
 
 const sequence = require("../utils/sequences");
+const { uploadMiddleware } = require('../utils/imgUpload');
 
 blogRoute.get("/test", getFields.none(), async (request, response) => {
     try {
@@ -130,15 +131,28 @@ blogRoute.get("/bloglistEa", getFields.none(), async (request, response) => {
     }
 });
 
-const upload = multer({
-    dest: "uploads/"
-});
-
-blogRoute.post("/fileUpload", upload.single("userfile"), async (request, response) => {
-
+// blogRoute.post("/fileUpload", uploadMiddleware, async (request, response) => {
+blogRoute.post("/fileUpload", async (request, response) => {
     try {
         let sendObj = {};
-        // console.log(request);
+        uploadMiddleware(request, response, function (err) {
+
+            if (err instanceof multer.MulterError) {  
+                console.log(err.code);
+            } else if (err) {      // An unknown error occurred when uploading. 
+                console.log("알수없는오류");
+            }    // Everything went fine. 
+            else {
+                console.log("user_id", request.body);
+            }
+
+            
+        
+        })
+
+        
+        // console.log(request.file);
+        
         
 
         // sendObj = commonModules.sendObjSet("2120", addObj);
@@ -148,6 +162,7 @@ blogRoute.post("/fileUpload", upload.single("userfile"), async (request, respons
         });
 
     } catch (error) {
+        console.log("여기");
         console.log(error);
         response.status(500).send(error);
     }
