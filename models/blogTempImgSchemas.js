@@ -12,6 +12,11 @@ const BlogTempImgSchemas = mongoose.Schema({
         required: true,
         index:true
     },
+    img : {
+        type: String,
+        required: true,
+        index:true
+    },
     regdate : {
         type: Date,
         default: Date.now

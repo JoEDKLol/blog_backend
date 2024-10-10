@@ -16,7 +16,7 @@ const upload = multer({
 	    },
     }),
     //file size
-    limits: { fileSize: 0 * 0 },
+    limits: { fileSize: 1024 * 1024 },
 });
 
 const uploadMiddleware = upload.single('file');

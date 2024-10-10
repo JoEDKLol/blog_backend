@@ -145,12 +145,12 @@ function returnCodeContents(code){
     }
 
     if(code==="2130"){
-        arr.push("fileUpload success"); 
+        arr.push("imgUpload success"); 
         arr.push("n"); 
     }
 
     if(code==="2131"){
-        arr.push("get fileUpload fail"); 
+        arr.push("imgUpload fail"); 
         arr.push("n"); 
     }
 
