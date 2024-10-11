@@ -106,7 +106,7 @@ function returnCodeContents(code){
 
     if(code==="2020"){
         arr.push("request logout success"); 
-        arr.push("n"); 
+        arr.push("y"); 
     }
 
     if(code==="2021"){
@@ -116,7 +116,7 @@ function returnCodeContents(code){
 
     if(code==="2100"){
         arr.push("get bloglist success"); 
-        arr.push("n"); 
+        arr.push("y"); 
     }
 
     if(code==="2101"){
@@ -126,7 +126,7 @@ function returnCodeContents(code){
 
     if(code==="2110"){
         arr.push("get blogInfo success"); 
-        arr.push("n"); 
+        arr.push("y"); 
     }
 
     if(code==="2111"){
@@ -136,7 +136,7 @@ function returnCodeContents(code){
 
     if(code==="2120"){
         arr.push("get bloglistEa success"); 
-        arr.push("n"); 
+        arr.push("y"); 
     }
 
     if(code==="2121"){
@@ -146,11 +146,21 @@ function returnCodeContents(code){
 
     if(code==="2130"){
         arr.push("imgUpload success"); 
-        arr.push("n"); 
+        arr.push("y"); 
     }
 
     if(code==="2131"){
         arr.push("imgUpload fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2140"){
+        arr.push("write success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2141"){
+        arr.push("write fail"); 
         arr.push("n"); 
     }
 

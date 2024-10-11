@@ -17,18 +17,25 @@ const BlogListSchema = mongoose.Schema({
         index:true,
     },
     m_category_id : {
-        type: mongoose.Schema.ObjectId,
-        required: true,
+        type: String,
+        // type: mongoose.Schema.ObjectId,
+        // required: true,
     },
     s_category_id : {
-        type: mongoose.Schema.ObjectId,
-        required: true,
+        type: String,
+        // type: mongoose.Schema.ObjectId,
+        // required: true,
     },
     title : {
         type: String,
     },
     pic : {             //first pic url
         type: String,
+    },
+    temp_num : { //from blogTempImgSchemas.js's temp_num
+        type: String,
+        required: true,
+        index:true
     },
     content : {
         type: String,

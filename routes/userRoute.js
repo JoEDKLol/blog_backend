@@ -150,7 +150,7 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
                 email:resusers.email,
                 blog_seq:resusers.blog_seq
             }
-            console.log(userObj);
+            // console.log(userObj);
             response.setHeader("refreshtoken", refreshtoken);
             sendObj = commonModules.sendObjSet("1050", userObj);
             

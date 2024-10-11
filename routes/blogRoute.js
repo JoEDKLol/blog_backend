@@ -2,6 +2,7 @@ const express=require('express')
 const multer=require('multer')
 const blogRoute=express.Router()
 const dotenv = require('dotenv')
+const fs = require('fs');
 let getFields=multer()
 const Users = require("../models/userSchemas");
 const BlogInfos = require("../models/blogInfoSchemas");
@@ -159,6 +160,7 @@ blogRoute.post("/fileUpload", async (request, response) => {
                     user_id:request.body.user_id,
                     temp_num :request.body.temp_num,
                     img : request.file.filename,
+                    img_url:fullUrl+request.file.filename,
                     reguser:request.body.email,
                     upduser:request.body.email
                 }
@@ -187,18 +189,78 @@ blogRoute.post("/fileUpload", async (request, response) => {
 blogRoute.post("/write", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
-        console.log(request.body.randomNum);
+        console.log(request.body);
 
         const _temp_num = request.body.randomNum
         const tempImgList = await BlogTempImgs.find({
+            user_id:request.body.user_id,
             temp_num:_temp_num,
-        })
-        console.log(tempImgList);
+        }).sort({regdate:1})
+        
+        //startTransaction
+        const session = await db.startSession();
+        session.startTransaction();
+        
+        //img check in content and delete
+        let firstImgArr = [];
+        for(let i=0; i<tempImgList.length; i++){
+            let imgExist = request.body.content.indexOf(tempImgList[i].img);
+            
+            if(imgExist < 0){ //delete
+                await BlogTempImgs.deleteOne({
+                    img:tempImgList[i].img
+                });
+                try {
+                    if (fs.existsSync("./uploads/" + tempImgList[i].img)) {
+                        fs.unlinkSync("./uploads/" + tempImgList[i].img);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            }else{
+                firstImgArr.push(tempImgList[i].img_url);
+            }
+        }
+ 
+        let firstImg = "";
+        (firstImgArr.length === 0)?firstImg = "":firstImg=firstImgArr[0];
+
+        const blog_list_seq = await sequence.getSequence("blog_list_seq");
+        const BlogListObj = {
+            
+            user_id : request.body.user_id, 
+            blog_seq : request.body.blog_seq, 
+            seq:blog_list_seq, 
+            m_category_id:"",
+            s_category_id:"",
+            title:request.body.title,
+            pic:firstImg,
+            temp_num:_temp_num,
+            content:request.body.content,
+            public:"",
+            hashtag:"",
+            deleteyn:"n",
+            reguser:request.body.email,
+            upduser:request.body.email
+        }
+
+        // console.log(BlogListObj);
+        const newBlogList = new BlogLists(BlogListObj);
+        const resBlogTempImgs = await newBlogList.save();
+
+        // 4. commit
+        await session.commitTransaction();
+        // 5. 세션 끝내기
+        session.endSession();
+        
+        sendObj = commonModules.sendObjSet("2140");
+        //2140
         response.status(200).send({
             sendObj
         });
 
     } catch (error) {
+        console.log(error);
         response.status(500).send(error);
     }
 });
