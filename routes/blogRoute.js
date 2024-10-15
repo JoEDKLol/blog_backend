@@ -265,6 +265,125 @@ blogRoute.post("/write", getFields.none(), async (request, response) => {
     }
 });
 
+blogRoute.get("/blogDetail", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+        console.log(request.query);
+        const blogSeq = Number(request.query.blog_seq);
+        const seq = Number(request.query.seq);
+
+        let blogDetail = await BlogLists.findOne({
+            blog_seq:blogSeq,
+            seq:seq,
+            deleteyn:'n'
+            
+        })
+
+        
+        // const updateBlog = await BlogLists.updateMany({deleteyn:'n'});
+        if(!blogDetail){
+            sendObj = commonModules.sendObjSet("2151");
+        }else{
+
+            let addObj = {
+                blogDetail:blogDetail
+            }
+
+            sendObj = commonModules.sendObjSet("2150", addObj);
+        }
+        response.send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+
+blogRoute.post("/update", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+        // console.log(request.body);
+
+        const _temp_num = request.body.randomNum
+        const tempImgList = await BlogTempImgs.find({
+            user_id:request.body.user_id,
+            temp_num:_temp_num,
+        }).sort({regdate:1})
+        
+        //startTransaction
+        const session = await db.startSession();
+        session.startTransaction();
+        
+        //img check in content and delete
+        let firstImgArr = [];
+
+        console.log(tempImgList);
+
+        for(let i=0; i<tempImgList.length; i++){
+            let imgExist = request.body.content.indexOf(tempImgList[i].img);
+            
+            if(imgExist < 0){ //delete
+                await BlogTempImgs.deleteOne({
+                    img:tempImgList[i].img
+                });
+                try {
+                    if (fs.existsSync("./uploads/" + tempImgList[i].img)) {
+                        fs.unlinkSync("./uploads/" + tempImgList[i].img);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            }else{
+                firstImgArr.push(tempImgList[i].img_url);
+            }
+        }
+ 
+        let firstImg = "";
+        (firstImgArr.length === 0)?firstImg = "":firstImg=firstImgArr[0];
+
+        
+        let date = new Date().toISOString();
+        let updateBlogLists = await BlogLists.updateOne(
+            {
+                user_id:new ObjectId(request.body.user_id),
+                blog_seq:request.body.blog_seq,
+                seq:request.body.seq
+            },{
+                "m_category_id":"",
+                "s_category_id":"",
+                "title":request.body.title,
+                "pic":firstImg,
+                "content":request.body.content,
+                "public":"",
+                "hashtag":"",
+                "temp_num":_temp_num,
+                "upduser":request.body.email,
+                "updDate":date,
+            }
+        );
+
+
+
+        // 4. commit
+        await session.commitTransaction();
+        // 5. 세션 끝내기
+        session.endSession();
+        
+        sendObj = commonModules.sendObjSet("2140");
+        //2140
+        response.status(200).send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
 // blogRoute.get("/sequenceTest", getFields.none(), async (request, response) => {
 //     try {
 //         let sendObj = {};
