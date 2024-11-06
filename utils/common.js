@@ -174,6 +174,26 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2160"){
+        arr.push("blog imgUpload success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2161"){
+        arr.push("blog imgUpload fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2170"){
+        arr.push("blog info update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2171"){
+        arr.push("blog info update fail"); 
+        arr.push("n"); 
+    }
+
     return arr
 }
 

@@ -124,6 +124,7 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
                 email:request.body.email,
                 seq:blogSeq,
                 name:emailpre,
+                blogtitle:emailpre,
                 reguser:request.body.email,
                 upduser:request.body.email
             }
@@ -200,6 +201,7 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
                 email:request.body.email,
                 seq:blogSeq,
                 name:emailpre,
+                blogtitle:emailpre,
                 reguser:request.body.email,
                 upduser:request.body.email
             }
@@ -413,7 +415,7 @@ userRoute.post("/updatePassword", getFields.none(), async (request, response) =>
 userRoute.get("/getAccessToken", getFields.none(), async (request, response) => {
     let sendObj = {};
     try {
-        // console.log(request.cookies.refreshtoken);
+        console.log(request.cookies.refreshtoken);
         //쿠키에 있는 토큰 검증
         
         if(request.cookies.refreshtoken){

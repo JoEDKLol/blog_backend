@@ -134,16 +134,15 @@ blogRoute.get("/bloglistEa", getFields.none(), async (request, response) => {
     }
 });
 
-// blogRoute.post("/fileUpload", uploadMiddleware, async (request, response) => {
 blogRoute.post("/fileUpload", async (request, response) => {
     try {
         let sendObj = {};
         uploadMiddleware(request, response, async function (err) {
-
             if (err instanceof multer.MulterError) {  
                 // console.log(err.code);
                 sendObj = commonModules.sendObjSet("2131");
             } else if (err) {      // An unknown error occurred when uploading. 
+                // console.log(err.code);
                 sendObj = commonModules.sendObjSet("2131");
             }    // Everything went fine. 
             else {
@@ -175,6 +174,7 @@ blogRoute.post("/fileUpload", async (request, response) => {
 
             }
 
+            
             response.send({
                 sendObj
             });
@@ -320,7 +320,7 @@ blogRoute.post("/update", getFields.none(), async (request, response) => {
         //img check in content and delete
         let firstImgArr = [];
 
-        console.log(tempImgList);
+        // console.log(tempImgList);
 
         for(let i=0; i<tempImgList.length; i++){
             let imgExist = request.body.content.indexOf(tempImgList[i].img);
@@ -384,6 +384,54 @@ blogRoute.post("/update", getFields.none(), async (request, response) => {
     }
 });
 
+blogRoute.post("/blogUpdate", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+        console.log(request.body);
+
+        let date = new Date().toISOString();
+        
+        const session = await db.startSession();
+        session.startTransaction();
+        let updateBlogLists = await BlogInfos.updateOne(
+            {
+                email:request.body.email,
+                seq:request.body.blog_seq,
+            },{
+                "name":request.body.name,
+                "blogtitle":request.body.blogtitle,
+                "introduction":request.body.introduction,
+                "blogimg_thumbnailimg":request.body.blogimg_thumbnailimg,
+                "blogimg":request.body.blogimg,
+                "upduser":request.body.email,
+                "updDate":date,
+            }
+        );
+
+        // const majorCategories = request.body.majorCategories
+
+        // for(){
+
+        // }
+
+        // 4. commit
+        await session.commitTransaction();
+        // 5. 세션 끝내기
+        session.endSession();
+
+        console.log(updateBlogLists);
+        sendObj = commonModules.sendObjSet("2170");
+        //2140
+        response.status(200).send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
 // blogRoute.get("/sequenceTest", getFields.none(), async (request, response) => {
 //     try {
 //         let sendObj = {};
@@ -399,5 +447,6 @@ blogRoute.post("/update", getFields.none(), async (request, response) => {
 //         response.status(500).send(error);
 //     }
 // });
+ 
 
 module.exports=blogRoute
