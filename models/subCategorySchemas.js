@@ -1,12 +1,16 @@
 const mongoose = require('mongoose')
 
 const SubCategorySchema = mongoose.Schema({
+    seq:{
+        type: Number,
+        index:true,
+    },
     blog_id : {
         type: mongoose.Schema.ObjectId,
         required: true,
-        index:{unique:true}
+        index:true
     },
-    m_category_id : {
+    m_category_seq : {
         type: mongoose.Schema.ObjectId,
         required: true,
     },

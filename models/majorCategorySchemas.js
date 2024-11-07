@@ -1,10 +1,14 @@
 const mongoose = require('mongoose')
 
 const MajorCategorySchema = mongoose.Schema({
+    seq:{
+        type: Number,
+        index:true,
+    },
     blog_id : {
         type: mongoose.Schema.ObjectId,
         required: true,
-        index:{unique:true}
+        index:true
     },
     
     categoryNm: {

@@ -75,14 +75,29 @@ blogRoute.get("/bloglist", getFields.none(), async (request, response) => {
 
 blogRoute.get("/blogInfo", getFields.none(), async (request, response) => {
     try {
-        let sendObj = {};
         
+        let sendObj = {};
         let BlogInfo = await BlogInfos.findOne({blog_seq:request.params.blog_seq});
+
+        
+
+        let MajorCategory = await MajorCategories.find({blog_id:BlogInfo._id});
+
+        // console.log(MajorCategory);
+
+        let SubCategory = await SubCategories.find({blog_id:BlogInfo._id});
         
         if(!BlogInfo){
             sendObj = commonModules.sendObjSet("2111");
         }else{
-            sendObj = commonModules.sendObjSet("2110", BlogInfo);
+            const obj = {
+                blogInfo : BlogInfo,
+                majorCategory : MajorCategory,
+                majorCategoryCnt : MajorCategory.length,
+                subCategory : SubCategory,
+                subCategoryCnt : SubCategory.length
+            }
+            sendObj = commonModules.sendObjSet("2110", obj);
         }
         response.send({
             sendObj
@@ -129,7 +144,6 @@ blogRoute.get("/bloglistEa", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
         response.status(500).send(error);
     }
 });
@@ -189,7 +203,6 @@ blogRoute.post("/fileUpload", async (request, response) => {
 blogRoute.post("/write", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
-        console.log(request.body);
 
         const _temp_num = request.body.randomNum
         const tempImgList = await BlogTempImgs.find({
@@ -215,7 +228,7 @@ blogRoute.post("/write", getFields.none(), async (request, response) => {
                         fs.unlinkSync("./uploads/" + tempImgList[i].img);
                     }
                 } catch (error) {
-                    console.log(error);
+                    // console.log(error);
                 }
             }else{
                 firstImgArr.push(tempImgList[i].img_url);
@@ -244,7 +257,6 @@ blogRoute.post("/write", getFields.none(), async (request, response) => {
             upduser:request.body.email
         }
 
-        // console.log(BlogListObj);
         const newBlogList = new BlogLists(BlogListObj);
         const resBlogTempImgs = await newBlogList.save();
 
@@ -260,7 +272,7 @@ blogRoute.post("/write", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         response.status(500).send(error);
     }
 });
@@ -268,7 +280,7 @@ blogRoute.post("/write", getFields.none(), async (request, response) => {
 blogRoute.get("/blogDetail", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
-        console.log(request.query);
+        // console.log(request.query);
         const blogSeq = Number(request.query.blog_seq);
         const seq = Number(request.query.seq);
 
@@ -387,8 +399,7 @@ blogRoute.post("/update", getFields.none(), async (request, response) => {
 blogRoute.post("/blogUpdate", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
-        console.log(request.body);
-
+        
         let date = new Date().toISOString();
         
         const session = await db.startSession();
@@ -408,11 +419,27 @@ blogRoute.post("/blogUpdate", getFields.none(), async (request, response) => {
             }
         );
 
-        // const majorCategories = request.body.majorCategories
+        const majorCategories = request.body.majorCategories
 
-        // for(){
+        // for(let i=0; i<majorCategories.length; i++){
+        //     console.log(majorCategories[i]);
+            
+        //     let seq = majorCategories[i].seq;
+        //     //upsert majorCategories
+        //     let upsertMajor = await MajorCategories.findOneAndUpdate(
+        //         {seq:seq},
+        //         {
+        //             "seq":await sequence.getSequence("major_category_seq"),
+        //             "blog_id":majorCategories[i].blog_id,
+        //             "categoryNm":majorCategories[i].categoryNm,
+        //             "order":majorCategories[i].order
+        //         },
+        //         { new: true, upsert: true }
+        //     )
 
-        // }
+        //     console.log(upsertMajor);
+
+        // }   
 
         // 4. commit
         await session.commitTransaction();
