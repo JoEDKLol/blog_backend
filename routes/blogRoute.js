@@ -446,9 +446,95 @@ blogRoute.post("/blogUpdate", getFields.none(), async (request, response) => {
         // 5. 세션 끝내기
         session.endSession();
 
-        console.log(updateBlogLists);
+        // console.log(updateBlogLists);
         sendObj = commonModules.sendObjSet("2170");
         //2140
+        response.status(200).send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.post("/majorAdd", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+        
+        let date = new Date().toISOString();
+        
+        // console.log(request.body);
+
+        let searchMajor = await MajorCategories.findOne(
+            {seq:request.body.seq}
+        );
+
+        // console.log(searchMajor);
+        if(searchMajor){ //update
+            // console.log(searchMajor);
+            let upsertMajor = await MajorCategories.findOneAndUpdate(
+                {seq:request.body.seq},
+                {
+                    "categoryNm":request.body.categoryNm,
+                    "upduser":request.body.email,
+                    "updDate":date,
+                },
+                { new: true}
+            )
+
+            sendObj = commonModules.sendObjSet("2180", upsertMajor);
+
+        }else{ //insert
+            const maJorSeq = await sequence.getSequence("major_category_seq")
+            const blogMajorObj = {
+                seq:maJorSeq,
+                blog_id:request.body.blog_id,
+                categoryNm:request.body.categoryNm,
+                reguser:request.body.email,
+                upduser:request.body.email
+            }
+
+            const newMajorCategories =new MajorCategories(blogMajorObj);
+            const resMajorCategories = await newMajorCategories.save();
+
+            sendObj = commonModules.sendObjSet("2180", resMajorCategories);
+        }
+
+        
+        response.status(200).send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.post("/majorDelete", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+        
+        const session = await db.startSession();
+        session.startTransaction();
+        
+        const majorDeleteRes = await MajorCategories.deleteOne({
+            seq:request.body.seq
+        });
+
+        const subDeleteRes = await SubCategories.deleteMany({
+            m_category_seq:request.body.seq
+        });
+
+        await session.commitTransaction();
+        session.endSession();
+
+        console.log(majorDeleteRes);
+        console.log(subDeleteRes);
+
+        sendObj = commonModules.sendObjSet("2180");
         response.status(200).send({
             sendObj
         });

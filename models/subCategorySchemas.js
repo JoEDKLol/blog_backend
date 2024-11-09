@@ -11,8 +11,9 @@ const SubCategorySchema = mongoose.Schema({
         index:true
     },
     m_category_seq : {
-        type: mongoose.Schema.ObjectId,
+        type: Number,
         required: true,
+        index:true
     },
     categoryNm: {
         type: String,

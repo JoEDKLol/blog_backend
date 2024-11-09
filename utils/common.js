@@ -194,6 +194,16 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2180"){
+        arr.push("blog major category update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2181"){
+        arr.push("blog major category update fail"); 
+        arr.push("n"); 
+    }
+
     return arr
 }
 
