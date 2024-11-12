@@ -23,7 +23,9 @@ const SubCategorySchema = mongoose.Schema({
         type: Number,
         default: 0
     },
-
+    expression_method: {
+        type: String,
+    },
     deleteyn : {
         type: String,
         default: "n"

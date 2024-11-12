@@ -204,6 +204,36 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2190"){
+        arr.push("blog major category delete success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2191"){
+        arr.push("blog major category delete fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2200"){
+        arr.push("blog sub category update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2200"){
+        arr.push("blog sub category update fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2210"){
+        arr.push("blog sub category delete success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2211"){
+        arr.push("blog sub category delete fail"); 
+        arr.push("n"); 
+    }
+
     return arr
 }
 

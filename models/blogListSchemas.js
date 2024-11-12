@@ -16,12 +16,12 @@ const BlogListSchema = mongoose.Schema({
         required: true,
         index:true,
     },
-    m_category_id : {
+    m_category_seq : {
         type: String,
         // type: mongoose.Schema.ObjectId,
         // required: true,
     },
-    s_category_id : {
+    s_category_seq : {
         type: String,
         // type: mongoose.Schema.ObjectId,
         // required: true,

@@ -39,14 +39,18 @@ blogRoute.get("/bloglist", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
 
+        console.log(request.query);
+
         const currentPage = request.query.currentPage;
         const pageListCnt = commonModules.mainBoardSPage
         const skipPage = pageListCnt*(currentPage-1);
-        const keyword = request.params.keyword;
+        const keyword = request.query.keyword;
 
-        let bloglist = await BlogLists.find({
-            deleteyn:'n'
-        })
+        let bloglist = await BlogLists.find(
+            {
+                deleteyn:'n',
+            }
+        )
         .sort({regdate:-1})
         .skip(skipPage)
         .limit(pageListCnt);
@@ -118,25 +122,53 @@ blogRoute.get("/bloglistEa", getFields.none(), async (request, response) => {
         const keyword = request.query.keyword;
         const blogSeq = Number(request.query.blog_seq);
 
-        let bloglist = await BlogLists.find({
-            blog_seq:blogSeq,
-            deleteyn:'n'
-            
-        })
+        
+        const rgx = (pattern) => new RegExp(`.*${pattern}.*`, 'i');
+        const searchRgx = rgx(keyword);
+
+        let findCondition = {
+            $and: [
+                {blog_seq:blogSeq},
+                {deleteyn:'n'},
+            ]
+
+        };
+        if(request.query.majorSeq > 0){
+            findCondition.$and.push({
+                m_category_seq:request.query.majorSeq
+            })
+        }
+
+        if(request.query.subSeq > 0){
+            findCondition.$and.push({
+                s_category_seq:request.query.subSeq
+            });
+        }
+        
+        if(keyword != null && keyword != undefined && keyword != ""){
+            findCondition.$or=[
+                {title:{$regex:searchRgx}},
+                {content:{$regex:searchRgx}},
+            ]
+        }
+
+        let bloglist = await BlogLists.find(
+            findCondition
+        )
         .sort({regdate:-1})
+        .lean()
         .skip(skipPage)
         .limit(pageListCnt);
-        
-        // const updateBlog = await BlogLists.updateMany({deleteyn:'n'});
+
+        console.log(bloglist);
+
         if(!bloglist){
             sendObj = commonModules.sendObjSet("2120");
         }else{
-
             let addObj = {
                 currentPage:currentPage,
                 list:bloglist
             }
-
             sendObj = commonModules.sendObjSet("2121", addObj);
         }
         response.send({
@@ -474,7 +506,7 @@ blogRoute.post("/majorAdd", getFields.none(), async (request, response) => {
         // console.log(searchMajor);
         if(searchMajor){ //update
             // console.log(searchMajor);
-            let upsertMajor = await MajorCategories.findOneAndUpdate(
+            let updatetMajor = await MajorCategories.findOneAndUpdate(
                 {seq:request.body.seq},
                 {
                     "categoryNm":request.body.categoryNm,
@@ -484,7 +516,7 @@ blogRoute.post("/majorAdd", getFields.none(), async (request, response) => {
                 { new: true}
             )
 
-            sendObj = commonModules.sendObjSet("2180", upsertMajor);
+            sendObj = commonModules.sendObjSet("2180", updatetMajor);
 
         }else{ //insert
             const maJorSeq = await sequence.getSequence("major_category_seq")
@@ -531,10 +563,7 @@ blogRoute.post("/majorDelete", getFields.none(), async (request, response) => {
         await session.commitTransaction();
         session.endSession();
 
-        console.log(majorDeleteRes);
-        console.log(subDeleteRes);
-
-        sendObj = commonModules.sendObjSet("2180");
+        sendObj = commonModules.sendObjSet("2190");
         response.status(200).send({
             sendObj
         });
@@ -545,21 +574,74 @@ blogRoute.post("/majorDelete", getFields.none(), async (request, response) => {
     }
 });
 
-// blogRoute.get("/sequenceTest", getFields.none(), async (request, response) => {
-//     try {
-//         let sendObj = {};
+blogRoute.post("/subAdd", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+        
+        let date = new Date().toISOString();
+        let searchSub = await SubCategories.findOne(
+            {seq:request.body.seq}
+        );
 
-//         const test = await sequence.getSequence("blog_seq");
-//         sendObj.squence = test;
-//         response.send({
-//             sendObj
-//         });
+        if(searchSub){ //update
+            let updatetSub = await SubCategories.findOneAndUpdate(
+                {seq:request.body.seq},
+                {
+                    "categoryNm":request.body.categoryNm,
+                    "upduser":request.body.email,
+                    "updDate":date,
+                },
+                { new: true}
+            )
 
-//     } catch (error) {
-//         // console.log(error);
-//         response.status(500).send(error);
-//     }
-// });
+            sendObj = commonModules.sendObjSet("2200", updatetSub);
+
+        }else{ //insert
+            const subSeq = await sequence.getSequence("sub_category_seq")
+            const blogSubObj = {
+                seq:subSeq,
+                m_category_seq:request.body.m_category_seq,
+                blog_id:request.body.blog_id,
+                categoryNm:request.body.categoryNm,
+                reguser:request.body.email,
+                upduser:request.body.email
+            }
+
+            const newSubCategories = new SubCategories(blogSubObj);
+            const resSubCategories = await newSubCategories.save();
+
+            sendObj = commonModules.sendObjSet("2200", resSubCategories);
+        }
+
+        
+        response.status(200).send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
  
+
+blogRoute.post("/subDelete", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+        
+        const subDeleteRes = await SubCategories.deleteMany({
+            seq:request.body.seq
+        });
+
+        sendObj = commonModules.sendObjSet("2210");
+        response.status(200).send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
 
 module.exports=blogRoute
