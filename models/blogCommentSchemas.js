@@ -1,34 +1,24 @@
 const mongoose = require('mongoose')
 
-const BlogInfoSchema = mongoose.Schema({
-    email : {
-        type: String,
+const blogCommentSchemas = mongoose.Schema({
+    blog_seq : {
+        type: Number,
         required: true,
-        index:{unique:true}
+        index:true
     },
     seq:{
         type: Number,
         index:true,
     },
-    name : {
+    email : {
+        type: String,
+        required: true,
+        index:true
+    },
+    comment : {
         type: String,
     },
-    blogtitle : {
-        type: String,
-    },
-    introduction : {
-        type: String,
-    },
-    blogimg_thumbnailimg : {
-        type: String,
-    },
-    blogimg : {
-        type: String,
-    },
-    commentyn : {
-        type: String,
-        default: "y"
-    },
+    
     deleteyn : {
         type: String,
         default: "n"
@@ -52,5 +42,5 @@ const BlogInfoSchema = mongoose.Schema({
 })
 
 
-const BlogInfos=mongoose.model('blogInfo',BlogInfoSchema)
-module.exports=BlogInfos
+const BlogComments=mongoose.model('blogComment',blogCommentSchemas)
+module.exports=BlogComments

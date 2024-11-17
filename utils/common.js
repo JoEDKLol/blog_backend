@@ -1,5 +1,5 @@
 
-const mainBoardSPage = 9;
+const mainBoardSPage = 6;
 
 function sendObjSet(code, resObj) {
     const obj = {
@@ -231,6 +231,26 @@ function returnCodeContents(code){
 
     if(code==="2211"){
         arr.push("blog sub category delete fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2220"){
+        arr.push("blog list delete success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2221"){
+        arr.push("blog list delete fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2230"){
+        arr.push("blog comment write success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2231"){
+        arr.push("blog comment write fail"); 
         arr.push("n"); 
     }
 
