@@ -18,6 +18,7 @@ const db = mongoose.connection;
 
 const sequence = require("../utils/sequences");
 const { uploadMiddleware } = require('../utils/imgUpload');
+const BlogListLikes = require('../models/blogListLikeSchemas');
 
 blogRoute.get("/test", getFields.none(), async (request, response) => {
     try {
@@ -84,15 +85,6 @@ blogRoute.get("/bloglist", getFields.none(), async (request, response) => {
 
         const rgx = (pattern) => new RegExp(`.*${pattern}.*`, 'i');
         const searchRgx = rgx(keyword);
-
-        // let bloglist = await BlogLists.find(
-        //     {
-        //         deleteyn:'n',
-        //     }
-        // )
-        // .sort({regdate:-1})
-        // .skip(skipPage)
-        // .limit(pageListCnt);
 
         let findCondition = {
             $and: [
@@ -687,13 +679,20 @@ blogRoute.post("/bloglistdelete", getFields.none(), async (request, response) =>
 blogRoute.post("/commentwrite", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
-        console.log(request.body);
+
+        //startTransaction
+        const session = await db.startSession();
+        session.startTransaction();
+
         const blog_comment_seq = await sequence.getSequence("blog_comment_seq");
-        console.log(blog_comment_seq);
+        // console.log(request.query.user_id);
         const blogCommentObj = {
-            email : request.body.email,
-            blog_seq : request.body.blog_seq, 
+            
+            bloginfo:new ObjectId(request.body.blog_id),
+            blog_seq : request.body.blog_seq,
+            blog_list_seq : request.body.blog_list_seq,
             seq:blog_comment_seq, 
+            email : request.body.email,
             comment:request.body.comment,
             reguser:request.body.email,
             upduser:request.body.email
@@ -702,10 +701,273 @@ blogRoute.post("/commentwrite", getFields.none(), async (request, response) => {
         const newBlogComments = new BlogComments(blogCommentObj);
         const resBlogComments = await newBlogComments.save();
 
+        let blogComments = await BlogComments.findOne({
+            _id:resBlogComments._id
+        })
+        .populate('bloginfo').exec();
+
+         const BlogList = await BlogLists.updateOne({
+                seq:request.body.blog_list_seq,
+                deleteyn:'n'
+            },
+            { $inc: { "commentscnt": 1 } }
+         )
+
+         // 4. commit
+         await session.commitTransaction();
+         // 5. endSession
+         session.endSession();
 
         // console.log(updateBlogLists);
-        sendObj = commonModules.sendObjSet("2230");
+        sendObj = commonModules.sendObjSet("2230", blogComments);
         //2140
+        response.status(200).send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.get("/comments", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+
+        const currentPage = request.query.currentPage;
+        const pageListCnt = commonModules.commentPage
+        const skipPage = pageListCnt*(currentPage-1);
+        const blogSeq = Number(request.query.blog_seq);
+        const blog_list_seq = Number(request.query.blog_list_seq);
+
+        let blogComments = await BlogComments.find({
+            blog_seq:blogSeq,
+            blog_list_seq:blog_list_seq,
+            deleteyn:'n'
+        })
+        .sort({regdate:-1})
+        .lean()
+        .skip(skipPage)
+        .limit(pageListCnt).populate('bloginfo').exec();
+
+        
+        sendObj = commonModules.sendObjSet("2240", blogComments);
+        response.send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.post("/commentdelete", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+
+        const comment_id = request.body.comment_id;
+        const user_email = request.body.user_email;
+        let date = new Date().toISOString();
+
+        //startTransaction
+        const session = await db.startSession();
+        session.startTransaction();
+
+        let deleteBlogComment = await BlogComments.updateOne(
+            {
+                _id:comment_id,
+                email:user_email,
+            },{
+                "deleteyn":"y",
+                "upduser":request.body.email,
+                "updDate":date,
+            }
+        );        
+
+        const BlogList = await BlogLists.updateOne({
+                seq:request.body.blog_list_seq,
+                deleteyn:'n'
+            },
+            { $inc: { "commentscnt": -1 } }
+        )
+        // 4. commit
+        await session.commitTransaction();
+        // 5. endSession
+        session.endSession();
+
+        sendObj = commonModules.sendObjSet("2250");
+        response.send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.get("/commentsseq", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+
+        const currentSeq = Number(request.query.currentSeq);
+        const searchListCnt = commonModules.commentPage;
+        const blogSeq = Number(request.query.blog_seq);
+        const blog_list_seq = Number(request.query.blog_list_seq);
+
+        const queryStr = {
+                blog_seq:blogSeq,
+                blog_list_seq:blog_list_seq,
+                deleteyn:'n',
+                // seq:{"$gt":currentSeq}
+        }
+        
+        if(currentSeq > 0){
+            queryStr.seq = {"$lt":currentSeq}
+        }
+
+        let blogComments = await BlogComments.find(
+            queryStr
+        )
+        .sort({regdate:-1})
+        .lean()
+        .limit(searchListCnt).populate('bloginfo').exec();
+
+        const resObj = {
+            blogComments : blogComments,
+        }
+
+        if(blogComments.length > 0){
+            resObj.lastCommentSeq = blogComments[blogComments.length-1].seq
+        }
+
+        sendObj = commonModules.sendObjSet("2240", resObj);
+        response.send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.post("/bloglistlikeupdate", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+
+        let BlogListLike = await BlogListLikes.findOne({
+            user_id:request.body.user_id,
+            blog_list_seq:Number(request.body.blog_list_seq),
+            deleteyn:'n'
+        })
+
+        //startTransaction
+        const session = await db.startSession();
+        session.startTransaction();
+        
+
+        if(!BlogListLike){
+
+            const blog_list_seq = Number(request.body.blog_list_seq);
+
+            let BlogList = await BlogLists.findOne({
+                seq:blog_list_seq,
+                deleteyn:'n'
+            })
+
+            const blogListLikeObj = {
+                user_id : new ObjectId(request.body.user_id),
+                blog_list_seq : request.body.blog_list_seq,
+                like_yn : request.body.like_yn,
+                blogListInfo : BlogList._id,
+                reguser:request.body.email,
+                upduser:request.body.email
+            }
+    
+            const newBlogListLikes = new BlogListLikes(blogListLikeObj);
+            const resBlogListLikes = await newBlogListLikes.save();
+
+            const resObj = {
+                like_yn : request.body.like_yn
+            }
+
+            sendObj = commonModules.sendObjSet("2260", resObj);
+        }else{
+            const BlogListLike = await BlogListLikes.updateOne({
+                user_id:request.body.user_id,
+                blog_list_seq:Number(request.body.blog_list_seq),
+                deleteyn:'n' 
+            },
+            {
+                like_yn : request.body.like_yn,
+            }
+            )
+
+            const resObj = {
+                like_yn : request.body.like_yn
+            }
+            sendObj = commonModules.sendObjSet("2260", resObj);
+        }
+
+        
+        let blogUpdateObj = {}
+        if(request.body.like_yn === 'y'){
+            blogUpdateObj = { $inc: { "likecnt": 1 } }
+        }else{
+            blogUpdateObj = { $inc: { "likecnt": -1 } }
+        }
+
+        const BlogList = await BlogLists.updateOne({
+            seq:request.body.blog_list_seq,
+            deleteyn:'n'
+        },
+            blogUpdateObj
+        )
+
+        // 4. commit
+        await session.commitTransaction();
+        // 5. endSession
+        session.endSession();
+
+        
+        response.status(200).send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.get("/searchbloglistlike", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+
+        let BlogListLike = await BlogListLikes.findOne({
+            user_id:request.query.user_id,
+            blog_list_seq:Number(request.query.blog_list_seq),
+            deleteyn:'n'
+        })
+
+        if(!BlogListLike){
+
+            const resObj = {
+                like_yn : "n"
+            }
+            sendObj = commonModules.sendObjSet("2270", resObj);
+
+        }else{
+            const resObj = {
+                like_yn : BlogListLike.like_yn
+            }
+
+            sendObj = commonModules.sendObjSet("2270", resObj);
+        }
+
         response.status(200).send({
             sendObj
         });

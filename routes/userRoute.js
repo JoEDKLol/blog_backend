@@ -63,7 +63,8 @@ userRoute.post("/signin", getFields.none(), async (request, response) => {
                     const userObj = {
                         id:userData._id,
                         email:userData.email,
-                        blog_seq:userData.blog_seq
+                        blog_seq:userData.blog_seq,
+                        blog_id:userData.blog_id
                     }
                     //accesstoken, refreshtoken 헤더에 셋팅
                     // response.setHeader("accesstoken", accesstoken);
@@ -149,7 +150,8 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
             const userObj = {
                 id:resusers._id,
                 email:resusers.email,
-                blog_seq:resusers.blog_seq
+                blog_seq:resusers.blog_seq,
+                blog_id:userData.blog_id
             }
             // console.log(userObj);
             response.setHeader("refreshtoken", refreshtoken);
@@ -160,7 +162,8 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
             const userObj = {
                 id:userData._id,
                 email:userData.email,
-                blog_seq:userData.blog_seq
+                blog_seq:userData.blog_seq, 
+                blog_id:userData.blog_id
                 
             }
             response.setHeader("refreshtoken", refreshtoken);
@@ -428,6 +431,7 @@ userRoute.get("/getAccessToken", getFields.none(), async (request, response) => 
                         id:userData._id
                         , email:userData.email
                         , blog_seq:userData.blog_seq
+                        , blog_id:userData.blog_id
                     }
                     sendObj = commonModules.sendObjSet("2000", userObj);
                     const accesstoken = jwtModules.retAccessToken(userData._id, userData.email);
@@ -471,6 +475,7 @@ userRoute.post("/checkaccessToken", getFields.none(), async (request, response) 
                         id:userData._id
                         , email:userData.email
                         , blog_seq:userData.blog_seq
+                        , blog_id:userData.blog_id
                     }
                     sendObj = commonModules.sendObjSet("2010", userObj);
                     

@@ -49,6 +49,14 @@ const BlogListSchema = mongoose.Schema({
             index: true,
         }
     ],
+    commentscnt : {
+        type: Number,
+        default: 0
+    },
+    likecnt : {
+        type: Number,
+        default: 0
+    },
     deleteyn : {
         type: String,
         default: "n"

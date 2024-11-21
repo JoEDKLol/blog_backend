@@ -1,5 +1,6 @@
 
-const mainBoardSPage = 6;
+const mainBoardSPage = 12;
+const commentPage = 10;
 
 function sendObjSet(code, resObj) {
     const obj = {
@@ -254,6 +255,46 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2240"){
+        arr.push("blog comment search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2241"){
+        arr.push("blog comment search fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2250"){
+        arr.push("blog comment delete success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2251"){
+        arr.push("blog comment delete fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2260"){
+        arr.push("blog like update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2261"){
+        arr.push("blog like update fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2270"){
+        arr.push("blog like search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2271"){
+        arr.push("blog like search fail"); 
+        arr.push("n"); 
+    }
+
     return arr
 }
 
@@ -273,3 +314,4 @@ const getRandomNumber = (n) => {
 module.exports.sendObjSet = sendObjSet;
 module.exports.getRandomNumber = getRandomNumber;
 module.exports.mainBoardSPage = mainBoardSPage;
+module.exports.commentPage = commentPage;

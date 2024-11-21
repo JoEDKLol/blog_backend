@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
-const blogCommentSchemas = mongoose.Schema({
-    blog_seq : {
-        type: Number,
+const blogListLikeSchemas = mongoose.Schema({
+    user_id : {
+        type: mongoose.Schema.Types.ObjectId, 
         required: true,
         index:true
     },
@@ -11,23 +11,16 @@ const blogCommentSchemas = mongoose.Schema({
         required: true,
         index:true
     },
-    seq:{
-        type: Number,
-        index:true,
-    },
-    email : {
-        type: String,
-        required: true,
-        index:true
-    },
-    comment : {
-        type: String,
-    },
 
-    bloginfo: {
+    like_yn : {
+        type: String,
+        default: "n"
+    },
+    
+    blogListInfo: {
         type: mongoose.Schema.Types.ObjectId, 
         required: true,
-        ref: "blogInfo", 
+        ref: "blogList", 
     },
     
     deleteyn : {
@@ -53,5 +46,5 @@ const blogCommentSchemas = mongoose.Schema({
 })
 
 
-const BlogComments=mongoose.model('blogComment',blogCommentSchemas)
-module.exports=BlogComments
+const BlogListLikes=mongoose.model('blogListLike',blogListLikeSchemas)
+module.exports=BlogListLikes
