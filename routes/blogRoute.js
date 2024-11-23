@@ -20,22 +20,22 @@ const sequence = require("../utils/sequences");
 const { uploadMiddleware } = require('../utils/imgUpload');
 const BlogListLikes = require('../models/blogListLikeSchemas');
 
-blogRoute.get("/test", getFields.none(), async (request, response) => {
-    try {
+// blogRoute.get("/test", getFields.none(), async (request, response) => {
+//     try {
 
-        let bloglist = await BlogLists.find({});
+//         let bloglist = await BlogLists.find({});
         
-        response.send({
-            result:{
-                bloglist
-            }
+//         response.send({
+//             result:{
+//                 bloglist
+//             }
 
-        });
+//         });
 
-    } catch (error) {
-        response.status(500).send(error);
-    }
-});
+//     } catch (error) {
+//         response.status(500).send(error);
+//     }
+// });
 
 
 
@@ -224,9 +224,12 @@ blogRoute.post("/fileUpload", async (request, response) => {
                     temp_num :request.body.temp_num,
                     img : request.file.filename,
                     img_url:fullUrl+request.file.filename,
+                    blog_seq:request.body.blog_seq,
                     reguser:request.body.email,
                     upduser:request.body.email
                 }
+
+                // console.log(blogTempImgObj);
     
                 const newBlogTempImgs =new BlogTempImgs(blogTempImgObj);
                 const resBlogTempImgs = await newBlogTempImgs.save();
@@ -466,6 +469,10 @@ blogRoute.post("/blogUpdate", getFields.none(), async (request, response) => {
         
         let date = new Date().toISOString();
         
+        if(request.body.imgDelete){ //uploads img delete
+
+        }
+        
         let updateBlogLists = await BlogInfos.updateOne(
             {
                 email:request.body.email,
@@ -480,7 +487,6 @@ blogRoute.post("/blogUpdate", getFields.none(), async (request, response) => {
                 "updDate":date,
             }
         );
-
 
         // console.log(updateBlogLists);
         sendObj = commonModules.sendObjSet("2170");

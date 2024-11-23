@@ -151,7 +151,7 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
                 id:resusers._id,
                 email:resusers.email,
                 blog_seq:resusers.blog_seq,
-                blog_id:userData.blog_id
+                blog_id:resusers.blog_id
             }
             // console.log(userObj);
             response.setHeader("refreshtoken", refreshtoken);
