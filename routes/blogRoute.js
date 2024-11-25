@@ -19,6 +19,7 @@ const db = mongoose.connection;
 const sequence = require("../utils/sequences");
 const { uploadMiddleware } = require('../utils/imgUpload');
 const BlogListLikes = require('../models/blogListLikeSchemas');
+const BlogReplies = require('../models/blogReplySchemas');
 
 // blogRoute.get("/test", getFields.none(), async (request, response) => {
 //     try {
@@ -973,6 +974,94 @@ blogRoute.get("/searchbloglistlike", getFields.none(), async (request, response)
 
             sendObj = commonModules.sendObjSet("2270", resObj);
         }
+
+        response.status(200).send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.post("/commentupdate", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+
+        const comment_id = request.body.comment_id;
+        const user_email = request.body.user_email;
+        const comment = request.body.comment;
+        let date = new Date().toISOString();
+
+        let updateBlogComment = await BlogComments.updateOne(
+            {
+                _id:comment_id,
+            },{
+                "comment":comment,
+                "upduser":user_email,
+                "updDate":date,
+            }
+        );        
+
+        // console.log(updateBlogComment);
+
+        sendObj = commonModules.sendObjSet("2280");
+        response.send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.post("/replywrite", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+
+        //startTransaction
+        const session = await db.startSession();
+        session.startTransaction();
+
+        const blog_reply_seq = await sequence.getSequence("blog_reply_seq");
+        // console.log(request.query.user_id);
+        const blogReplyObj = {
+            
+            bloginfo:new ObjectId(request.body.blog_id),
+            blog_seq : request.body.blog_seq,
+            blog_list_seq : request.body.blog_list_seq,
+            blog_comment_seq : request.body.blog_comment_seq,
+            blog_comment_id : request.body.blog_comment_id,
+            seq:blog_reply_seq, 
+            email : request.body.email,
+            reply:request.body.reply,
+            reguser:request.body.email,
+            upduser:request.body.email
+        }
+
+        const newBlogReplies = new BlogReplies(blogReplyObj);
+        const resBlogReplies = await newBlogReplies.save();
+
+        let blogApplies = await BlogReplies.findOne({
+            _id:resBlogReplies._id
+        })
+        .populate('bloginfo').exec();
+
+         const updateBlogComments = await BlogComments.updateOne({
+                seq:request.body.blog_comment_seq,
+                deleteyn:'n'
+            },
+            { $inc: { "repliescnt": 1 } }
+         )
+
+         // 4. commit
+         await session.commitTransaction();
+         // 5. endSession
+         session.endSession();
+
+        sendObj = commonModules.sendObjSet("2290", blogApplies);
 
         response.status(200).send({
             sendObj

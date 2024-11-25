@@ -106,6 +106,9 @@ userRoute.post("/signin", getFields.none(), async (request, response) => {
 userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
 
     try {
+
+        // console.log("여기온다");
+
         let sendObj = {};
         
         let userData = await Users.findOne({email:request.body.email});
@@ -219,7 +222,7 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
 
             const newUsers =new Users(request.body);
             let resusers=await newUsers.save();
-            
+            getAccessToken
             // 4. commit
             await session.commitTransaction();
             // 5. 세션 끝내기
@@ -418,9 +421,8 @@ userRoute.post("/updatePassword", getFields.none(), async (request, response) =>
 userRoute.get("/getAccessToken", getFields.none(), async (request, response) => {
     let sendObj = {};
     try {
-        console.log(request.cookies.refreshtoken);
         //쿠키에 있는 토큰 검증
-        
+        console.log("쿠키에 있는 토큰::",request.cookies.refreshtoken);
         if(request.cookies.refreshtoken){
             // console.log("1");
             const refreshtoken = jwtModules.checkRefreshToken(request.cookies.refreshtoken);

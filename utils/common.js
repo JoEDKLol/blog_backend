@@ -295,6 +295,26 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2280"){
+        arr.push("blog comment update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2281"){
+        arr.push("blog comment update fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2290"){
+        arr.push("blog reply write success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2291"){
+        arr.push("blog reply write fail"); 
+        arr.push("n"); 
+    }
+
     return arr
 }
 

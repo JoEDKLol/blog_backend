@@ -1,13 +1,23 @@
 const mongoose = require('mongoose')
 
-const blogCommentSchemas = mongoose.Schema({
-    blog_seq : {
+const blogReplySchemas = mongoose.Schema({
+    blog_seq : { 
         type: Number,
         required: true,
         index:true
     },
-    blog_list_seq : {
+    blog_list_seq : { 
         type: Number,
+        required: true,
+        index:true
+    },
+    blog_comment_seq : {
+        type: Number,
+        required: true,
+        index:true
+    },
+    blog_comment_id : {
+        type: mongoose.Schema.ObjectId,
         required: true,
         index:true
     },
@@ -20,7 +30,7 @@ const blogCommentSchemas = mongoose.Schema({
         required: true,
         index:true
     },
-    comment : {
+    reply : {
         type: String,
     },
 
@@ -28,11 +38,6 @@ const blogCommentSchemas = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         required: true,
         ref: "blogInfo", 
-    },
-
-    repliescnt : {
-        type: Number,
-        default: 0
     },
     
     deleteyn : {
@@ -58,5 +63,5 @@ const blogCommentSchemas = mongoose.Schema({
 })
 
 
-const BlogComments=mongoose.model('blogComment',blogCommentSchemas)
-module.exports=BlogComments
+const BlogReplies=mongoose.model('blogReply',blogReplySchemas)
+module.exports=BlogReplies
