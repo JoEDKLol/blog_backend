@@ -1073,4 +1073,53 @@ blogRoute.post("/replywrite", getFields.none(), async (request, response) => {
     }
 });
 
+blogRoute.get("/replayseq", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+
+        const currentReplaySeq = Number(request.query.currentReplaySeq);
+        const searchListCnt = commonModules.replyPage;
+        const blog_comment_seq = Number(request.query.blog_comment_seq);
+
+        const queryStr = {
+            blog_comment_seq:blog_comment_seq,
+            deleteyn:'n',
+        }
+
+        
+        
+        if(currentReplaySeq > 0){
+            queryStr.seq = {"$lt":currentReplaySeq}
+        }
+
+        console.log(queryStr);
+
+        let blogReplies = await BlogReplies.find(
+            queryStr
+        )
+        .sort({regdate:-1})
+        .lean()
+        .limit(searchListCnt).populate('bloginfo').exec();
+
+        const resObj = {
+            blogReplies : blogReplies,
+        }
+
+        // console.log(resObj);
+
+        if(blogReplies.length > 0){
+            resObj.lastCommentSeq = blogReplies[blogReplies.length-1].seq
+        }
+
+        sendObj = commonModules.sendObjSet("2300", resObj);
+        response.send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
 module.exports=blogRoute

@@ -1,6 +1,7 @@
 
 const mainBoardSPage = 12;
 const commentPage = 10;
+const replyPage = 5;
 
 function sendObjSet(code, resObj) {
     const obj = {
@@ -315,6 +316,16 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2300"){
+        arr.push("blog reply search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2310"){
+        arr.push("blog reply search fail"); 
+        arr.push("n"); 
+    }
+
     return arr
 }
 
@@ -335,3 +346,5 @@ module.exports.sendObjSet = sendObjSet;
 module.exports.getRandomNumber = getRandomNumber;
 module.exports.mainBoardSPage = mainBoardSPage;
 module.exports.commentPage = commentPage;
+module.exports.replyPage = replyPage;
+
