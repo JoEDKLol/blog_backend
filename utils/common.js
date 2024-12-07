@@ -326,6 +326,26 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2320"){
+        arr.push("blog reply update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2321"){
+        arr.push("blog reply update fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2330"){
+        arr.push("blog reply delete success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2331"){
+        arr.push("blog reply delete fail"); 
+        arr.push("n"); 
+    }
+
     return arr
 }
 

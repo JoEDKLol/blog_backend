@@ -827,7 +827,7 @@ blogRoute.get("/commentsseq", getFields.none(), async (request, response) => {
         const queryStr = {
                 blog_seq:blogSeq,
                 blog_list_seq:blog_list_seq,
-                deleteyn:'n',
+                // deleteyn:'n',
                 // seq:{"$gt":currentSeq}
         }
         
@@ -841,6 +841,21 @@ blogRoute.get("/commentsseq", getFields.none(), async (request, response) => {
         .sort({regdate:-1})
         .lean()
         .limit(searchListCnt).populate('bloginfo').exec();
+
+
+        for(let i=0; i<blogComments.length; i++){
+            if(blogComments[i].deleteyn === 'y'){
+                if(blogComments[i].repliescnt === 0){
+                    blogComments.splice(i,1);
+                    i--;
+                }else{
+                    blogComments[i].comment = ""
+                }
+            }
+        }
+
+        console.log(blogComments);
+
 
         const resObj = {
             blogComments : blogComments,
@@ -990,7 +1005,7 @@ blogRoute.post("/commentupdate", getFields.none(), async (request, response) => 
         let sendObj = {};
 
         const comment_id = request.body.comment_id;
-        const user_email = request.body.user_email;
+        const email = request.body.email;
         const comment = request.body.comment;
         let date = new Date().toISOString();
 
@@ -999,7 +1014,7 @@ blogRoute.post("/commentupdate", getFields.none(), async (request, response) => 
                 _id:comment_id,
             },{
                 "comment":comment,
-                "upduser":user_email,
+                "upduser":email,
                 "updDate":date,
             }
         );        
@@ -1049,19 +1064,29 @@ blogRoute.post("/replywrite", getFields.none(), async (request, response) => {
         })
         .populate('bloginfo').exec();
 
-         const updateBlogComments = await BlogComments.updateOne({
+        const updateBlogComments = await BlogComments.updateOne({
                 seq:request.body.blog_comment_seq,
                 deleteyn:'n'
             },
             { $inc: { "repliescnt": 1 } }
-         )
+        )
+
+        const searchBlogComments = await BlogComments.findOne({seq:request.body.blog_comment_seq})
+
+
+        // console.log(searchBlogComments.repliescnt);
+
+         const resObj = {
+            repliescnt:searchBlogComments.repliescnt,
+            blogApplies:blogApplies
+         }
 
          // 4. commit
          await session.commitTransaction();
          // 5. endSession
          session.endSession();
 
-        sendObj = commonModules.sendObjSet("2290", blogApplies);
+        sendObj = commonModules.sendObjSet("2290", resObj);
 
         response.status(200).send({
             sendObj
@@ -1073,7 +1098,7 @@ blogRoute.post("/replywrite", getFields.none(), async (request, response) => {
     }
 });
 
-blogRoute.get("/replayseq", getFields.none(), async (request, response) => {
+blogRoute.get("/replyseq", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
 
@@ -1086,13 +1111,11 @@ blogRoute.get("/replayseq", getFields.none(), async (request, response) => {
             deleteyn:'n',
         }
 
-        
-        
         if(currentReplaySeq > 0){
             queryStr.seq = {"$lt":currentReplaySeq}
         }
 
-        console.log(queryStr);
+        // console.log(queryStr);
 
         let blogReplies = await BlogReplies.find(
             queryStr
@@ -1108,10 +1131,94 @@ blogRoute.get("/replayseq", getFields.none(), async (request, response) => {
         // console.log(resObj);
 
         if(blogReplies.length > 0){
-            resObj.lastCommentSeq = blogReplies[blogReplies.length-1].seq
+            resObj.lastReplySeq = blogReplies[blogReplies.length-1].seq
         }
 
         sendObj = commonModules.sendObjSet("2300", resObj);
+        response.send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.post("/replyupdate", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+
+        const reply_id = request.body.reply_id;
+        const reply = request.body.reply;
+        const email = request.body.email;
+        let date = new Date().toISOString();
+
+        console.log(reply_id);
+
+        let updateBlogReplies = await BlogReplies.updateOne(
+            {
+                _id:reply_id,
+            },{
+                "reply":reply,
+                "upduser":email,
+                "updDate":date,
+            }
+        );        
+
+
+        sendObj = commonModules.sendObjSet("2320");
+        response.send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.post("/replydelete", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+        const comment_id = request.body.comment_id;
+        const reply_id = request.body.reply_id;
+        const email = request.body.email;
+        let date = new Date().toISOString();
+
+        //startTransaction
+        const session = await db.startSession();
+        session.startTransaction();
+
+        let deleteBlogReplies = await BlogReplies.updateOne(
+            {
+                _id:reply_id,
+                email:email,
+            },{
+                "deleteyn":"y",
+                "upduser":request.body.email,
+                "updDate":date,
+            }
+        );        
+
+        const BlogComment = await BlogComments.updateOne({
+                _id:comment_id,
+            },
+            { $inc: { "repliescnt": -1 } }
+        )
+
+        const searchBlogComments = await BlogComments.findOne({_id:comment_id})
+
+        // 4. commit
+        await session.commitTransaction();
+        // 5. endSession
+        session.endSession();
+
+        const resObj = {
+            repliescnt:searchBlogComments.repliescnt,
+        }
+
+        sendObj = commonModules.sendObjSet("2330", resObj);
         response.send({
             sendObj
         });
