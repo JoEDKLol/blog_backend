@@ -5,6 +5,9 @@ const path = require('path');
 const upload = multer({
     storage: multer.diskStorage({
       	filename(req, file, done) {
+
+            
+
             const randomID = uuid4();
             const ext = file.mimetype.split("/")[1];
             const filename = randomID +"."+ ext;

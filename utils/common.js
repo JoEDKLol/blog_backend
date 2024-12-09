@@ -156,6 +156,11 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2132"){
+        arr.push("imgUpload imgbb fail"); 
+        arr.push("n"); 
+    }
+
     if(code==="2140"){
         arr.push("write success"); 
         arr.push("y"); 

@@ -2,6 +2,7 @@ const express=require('express')
 const multer=require('multer')
 const blogRoute=express.Router()
 const dotenv = require('dotenv')
+dotenv.config()
 const fs = require('fs');
 let getFields=multer()
 const Users = require("../models/userSchemas");
@@ -20,6 +21,9 @@ const sequence = require("../utils/sequences");
 const { uploadMiddleware } = require('../utils/imgUpload');
 const BlogListLikes = require('../models/blogListLikeSchemas');
 const BlogReplies = require('../models/blogReplySchemas');
+
+const axios=require('axios')
+const imgbbUploader = require('imgbb-uploader');
 
 // blogRoute.get("/test", getFields.none(), async (request, response) => {
 //     try {
@@ -211,6 +215,8 @@ blogRoute.post("/fileUpload", async (request, response) => {
                 sendObj = commonModules.sendObjSet("2131");
             }    // Everything went fine. 
             else {
+
+                
                 // console.log("user_id", request.file);
                 // console.log("user_id", request.body);
                 const protocol = request.protocol;
@@ -218,31 +224,52 @@ blogRoute.post("/fileUpload", async (request, response) => {
                 const url = request.originalUrl;
                 const port = process.env.PORT;
                 const fullUrl = `${protocol}://${host}:${port}/`
+                
+                // console.log(process.env.IMGBB_KEY);
+                // console.log(fullUrl+request.file.filename);
+                try{
+                    const res = await imgbbUploader(process.env.IMGBB_KEY, "./uploads/"+request.file.filename);
+                    console.log(res);
+                    const blogTempImgObj = {
+                        user_id:request.body.user_id,
+                        temp_num :request.body.temp_num,
+                        img : res.image.filename,
+                        img_url:res.image.url,
+                        blog_seq:request.body.blog_seq,
+                        reguser:request.body.email,
+                        upduser:request.body.email
+                    }
+
+                    // const blogTempImgObj = {
+                    //     user_id:request.body.user_id,
+                    //     temp_num :request.body.temp_num,
+                    //     img : request.file.filename,
+                    //     img_url:fullUrl+request.file.filename,
+                    //     blog_seq:request.body.blog_seq,
+                    //     reguser:request.body.email,
+                    //     upduser:request.body.email
+                    // }
+    
+                    // console.log(blogTempImgObj);
+        
+                    const newBlogTempImgs =new BlogTempImgs(blogTempImgObj);
+                    const resBlogTempImgs = await newBlogTempImgs.save();
+                    const resObj = {
+                        img_url : res.image.url
+                    }
+                    
+                    sendObj = commonModules.sendObjSet("2130", resObj);
+                }catch(e){
+                    sendObj = commonModules.sendObjSet("2132");
+                }
+                // console.log(res);
                 // console.log("user_id", fullUrl);
                 // blogTempImgSchemas save
-                const blogTempImgObj = {
-                    user_id:request.body.user_id,
-                    temp_num :request.body.temp_num,
-                    img : request.file.filename,
-                    img_url:fullUrl+request.file.filename,
-                    blog_seq:request.body.blog_seq,
-                    reguser:request.body.email,
-                    upduser:request.body.email
-                }
-
-                // console.log(blogTempImgObj);
-    
-                const newBlogTempImgs =new BlogTempImgs(blogTempImgObj);
-                const resBlogTempImgs = await newBlogTempImgs.save();
-                const resObj = {
-                    img_url : fullUrl + request.file.filename
-                }
-
-                sendObj = commonModules.sendObjSet("2130", resObj);
+                
 
             }
 
-            
+            console.log(sendObj);
             response.send({
                 sendObj
             });
@@ -253,6 +280,7 @@ blogRoute.post("/fileUpload", async (request, response) => {
         response.status(500).send(error);
     }
 });
+
 
 blogRoute.post("/write", getFields.none(), async (request, response) => {
     try {
