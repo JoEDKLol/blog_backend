@@ -24,6 +24,7 @@ const BlogReplies = require('../models/blogReplySchemas');
 
 const axios=require('axios')
 const imgbbUploader = require('imgbb-uploader');
+const AboutMeInfos = require('../models/aboutMeInfoSchemas')
 
 // blogRoute.get("/test", getFields.none(), async (request, response) => {
 //     try {
@@ -229,12 +230,12 @@ blogRoute.post("/fileUpload", async (request, response) => {
                 // console.log(fullUrl+request.file.filename);
                 try{
                     const res = await imgbbUploader(process.env.IMGBB_KEY, "./uploads/"+request.file.filename);
-                    console.log(res);
                     const blogTempImgObj = {
                         user_id:request.body.user_id,
                         temp_num :request.body.temp_num,
                         img : res.image.filename,
                         img_url:res.image.url,
+                        thumbImg_url:res.thumb.url,
                         blog_seq:request.body.blog_seq,
                         reguser:request.body.email,
                         upduser:request.body.email
@@ -255,21 +256,17 @@ blogRoute.post("/fileUpload", async (request, response) => {
                     const newBlogTempImgs =new BlogTempImgs(blogTempImgObj);
                     const resBlogTempImgs = await newBlogTempImgs.save();
                     const resObj = {
-                        img_url : res.image.url
+                        img_url : res.image.url,
+                        thumbImg_url : res.thumb.url
                     }
                     
                     sendObj = commonModules.sendObjSet("2130", resObj);
                 }catch(e){
                     sendObj = commonModules.sendObjSet("2132");
                 }
-                // console.log(res);
-                // console.log("user_id", fullUrl);
-                // blogTempImgSchemas save
-                
-
+            
             }
 
-            console.log(sendObj);
             response.send({
                 sendObj
             });
@@ -497,11 +494,7 @@ blogRoute.post("/blogUpdate", getFields.none(), async (request, response) => {
         let sendObj = {};
         
         let date = new Date().toISOString();
-        
-        if(request.body.imgDelete){ //uploads img delete
-
-        }
-        
+                
         let updateBlogLists = await BlogInfos.updateOne(
             {
                 email:request.body.email,
@@ -1248,6 +1241,93 @@ blogRoute.post("/replydelete", getFields.none(), async (request, response) => {
 
         sendObj = commonModules.sendObjSet("2330", resObj);
         response.send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.post("/aboutmeupdate", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+        
+        let date = new Date().toISOString();
+        
+        let aboutmeFind = await AboutMeInfos.findOne({_id:request.body.aboutme_id})
+
+        if(aboutmeFind){
+            let updateAboutMeInfos = await AboutMeInfos.updateOne(
+                {
+                    _id:request.body.aboutme_id
+                },{
+                    "aboutme_thumbnailimg":request.body.aboutme_thumbnailimg,
+                    "aboutme_img":request.body.aboutme_img,
+                    "aboutme_name":request.body.name,
+                    "jobtitle":request.body.jobTitle,
+                    "summary":request.body.summary,
+                    "aboutme_email":request.body.email,
+                    "aboutme_phone":request.body.phone,
+                    "aboutme_linkedin":request.body.linkedIn,
+                    "aboutme_address":request.body.address,
+                    "content":request.body.content,
+                    "upduser":request.body.user_email,
+                    "updDate":date,
+                }
+            );
+        }else{
+
+            const aboutMeObj = {
+            
+                user_id:new ObjectId(request.body.user_id),
+                blog_id:new ObjectId(request.body.blog_id),
+                blog_seq : request.body.blog_seq,
+                temp_num : request.body.temp_num,
+                aboutme_thumbnailimg:request.body.aboutme_thumbnailimg,
+                aboutme_img:request.body.aboutme_img,
+                aboutme_name:request.body.name,
+                jobtitle:request.body.jobTitle,
+                summary:request.body.summary,
+                aboutme_email:request.body.email,
+                aboutme_phone:request.body.phone,
+                aboutme_linkedin:request.body.linkedIn,
+                aboutme_address:request.body.address,
+                content:request.body.content,
+                reguser:request.body.user_email,
+                upduser:request.body.user_email
+            }
+    
+            const newAboutMeInfos = new AboutMeInfos(aboutMeObj);
+            const resAboutMeInfos = await newAboutMeInfos.save();
+
+        }
+        
+        
+
+        // console.log(updateBlogLists);
+        sendObj = commonModules.sendObjSet("2340");
+        //2340
+        response.status(200).send({
+            sendObj
+        });
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
+
+blogRoute.get("/aboutmeupdate", getFields.none(), async (request, response) => {
+    try {
+        let sendObj = {};
+
+        let aboutmeFind = await AboutMeInfos.findOne({user_id:request.body.user_id})
+
+        sendObj = commonModules.sendObjSet("2350", aboutmeFind);
+        
+        response.status(200).send({
             sendObj
         });
 

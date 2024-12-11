@@ -351,6 +351,25 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2340"){
+        arr.push("aboutme update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2341"){
+        arr.push("aboutme update fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2350"){
+        arr.push("aboutme search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2351"){
+        arr.push("aboutme search fail"); 
+        arr.push("n"); 
+    }
     return arr
 }
 

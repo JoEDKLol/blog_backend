@@ -20,6 +20,9 @@ const BlogTempImgSchemas = mongoose.Schema({
     img_url : {
         type: String,
     },
+    thumbImg_url : {
+        type: String,
+    },
     blog_seq : {
         type: Number,
         default: -1,
