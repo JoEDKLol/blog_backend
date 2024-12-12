@@ -1319,11 +1319,11 @@ blogRoute.post("/aboutmeupdate", getFields.none(), async (request, response) => 
     }
 });
 
-blogRoute.get("/aboutmeupdate", getFields.none(), async (request, response) => {
+blogRoute.get("/aboutme", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
 
-        let aboutmeFind = await AboutMeInfos.findOne({user_id:request.body.user_id})
+        let aboutmeFind = await AboutMeInfos.findOne({blog_seq:request.query.blog_seq})
 
         sendObj = commonModules.sendObjSet("2350", aboutmeFind);
         
