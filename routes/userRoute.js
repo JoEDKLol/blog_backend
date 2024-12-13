@@ -222,7 +222,6 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
 
             const newUsers =new Users(request.body);
             let resusers=await newUsers.save();
-            getAccessToken
             // 4. commit
             await session.commitTransaction();
             // 5. 세션 끝내기
@@ -233,11 +232,13 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
             sendObj = commonModules.sendObjSet("1001"); //email duplecate
         }
 
+
         response.status(200).send({
             sendObj
         });
 
     } catch (error) {
+
         response.status(500).send(error);
     }
 });

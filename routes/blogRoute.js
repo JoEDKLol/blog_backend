@@ -49,9 +49,10 @@ blogRoute.get("/blogInfo", getFields.none(), async (request, response) => {
     try {
         
         let sendObj = {};
-        let BlogInfo = await BlogInfos.findOne({blog_seq:request.params.blog_seq});
+        const blog_seq = Number(request.query.blog_seq)
+        let BlogInfo = await BlogInfos.findOne({seq:blog_seq});
 
-        
+        console.log(BlogInfo);
 
         let MajorCategory = await MajorCategories.find({blog_id:BlogInfo._id});
 
@@ -76,6 +77,7 @@ blogRoute.get("/blogInfo", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
+        console.log(error);
         response.status(500).send(error);
     }
 });
