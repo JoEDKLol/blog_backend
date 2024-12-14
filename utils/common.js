@@ -326,7 +326,7 @@ function returnCodeContents(code){
         arr.push("y"); 
     }
 
-    if(code==="2310"){
+    if(code==="2301"){
         arr.push("blog reply search fail"); 
         arr.push("n"); 
     }

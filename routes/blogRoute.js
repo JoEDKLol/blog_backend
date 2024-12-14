@@ -77,8 +77,9 @@ blogRoute.get("/blogInfo", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2111", error));
     }
 });
 
@@ -133,8 +134,9 @@ blogRoute.get("/bloglist", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2101", error));
     }
 });
 
@@ -202,7 +204,8 @@ blogRoute.get("/bloglistEa", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        response.status(500).send(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2121", error));
     }
 });
 
@@ -276,7 +279,8 @@ blogRoute.post("/fileUpload", async (request, response) => {
         })
 
     } catch (error) {
-        response.status(500).send(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2132", error));
     }
 });
 
@@ -354,7 +358,8 @@ blogRoute.post("/write", getFields.none(), async (request, response) => {
 
     } catch (error) {
         // console.log(error);
-        response.status(500).send(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2141", error));
     }
 });
 
@@ -403,8 +408,9 @@ blogRoute.get("/blogDetail", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2151", error));
     }
 });
 
@@ -486,8 +492,9 @@ blogRoute.post("/update", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2141", error));
     }
 });
 
@@ -520,8 +527,9 @@ blogRoute.post("/blogUpdate", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2171", error));
     }
 });
 
@@ -573,8 +581,9 @@ blogRoute.post("/majorAdd", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2181", error));
     }
 });
 
@@ -602,8 +611,9 @@ blogRoute.post("/majorDelete", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2191", error));
     }
 });
 
@@ -652,8 +662,9 @@ blogRoute.post("/subAdd", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2201", error));
     }
 });
  
@@ -672,8 +683,9 @@ blogRoute.post("/subDelete", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2211", error));
     }
 });
 
@@ -701,8 +713,9 @@ blogRoute.post("/bloglistdelete", getFields.none(), async (request, response) =>
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2221", error));
     }
 });
 
@@ -756,8 +769,9 @@ blogRoute.post("/commentwrite", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2231", error));
     }
 });
 
@@ -788,8 +802,9 @@ blogRoute.get("/comments", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2241", error));
     }
 });
 
@@ -833,8 +848,9 @@ blogRoute.post("/commentdelete", getFields.none(), async (request, response) => 
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2251", error));
     }
 });
 
@@ -877,9 +893,6 @@ blogRoute.get("/commentsseq", getFields.none(), async (request, response) => {
             }
         }
 
-        console.log(blogComments);
-
-
         const resObj = {
             blogComments : blogComments,
         }
@@ -894,8 +907,9 @@ blogRoute.get("/commentsseq", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2241", error));
     }
 });
 
@@ -983,8 +997,9 @@ blogRoute.post("/bloglistlikeupdate", getFields.none(), async (request, response
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2261", error));
     }
 });
 
@@ -1018,8 +1033,9 @@ blogRoute.get("/searchbloglistlike", getFields.none(), async (request, response)
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2271", error));
     }
 });
 
@@ -1050,8 +1066,9 @@ blogRoute.post("/commentupdate", getFields.none(), async (request, response) => 
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2281", error));
     }
 });
 
@@ -1116,8 +1133,9 @@ blogRoute.post("/replywrite", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2291", error));
     }
 });
 
@@ -1163,8 +1181,9 @@ blogRoute.get("/replyseq", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2301", error));
     }
 });
 
@@ -1196,8 +1215,9 @@ blogRoute.post("/replyupdate", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2321", error));
     }
 });
 
@@ -1247,8 +1267,10 @@ blogRoute.post("/replydelete", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2331", error));
+        
     }
 });
 
@@ -1258,7 +1280,7 @@ blogRoute.post("/aboutmeupdate", getFields.none(), async (request, response) => 
         
         let date = new Date().toISOString();
         
-        let aboutmeFind = await AboutMeInfos.findOne({_id:request.body.aboutme_id})
+        let aboutmeFind = await AboutMeInfos.findOne({blog_seq:request.body.blog_seq})
 
         if(aboutmeFind){
             let updateAboutMeInfos = await AboutMeInfos.updateOne(
@@ -1308,16 +1330,14 @@ blogRoute.post("/aboutmeupdate", getFields.none(), async (request, response) => 
         
         
 
-        // console.log(updateBlogLists);
         sendObj = commonModules.sendObjSet("2340");
-        //2340
         response.status(200).send({
             sendObj
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2341", error));
     }
 });
 
@@ -1328,14 +1348,12 @@ blogRoute.get("/aboutme", getFields.none(), async (request, response) => {
         let aboutmeFind = await AboutMeInfos.findOne({blog_seq:request.query.blog_seq})
 
         sendObj = commonModules.sendObjSet("2350", aboutmeFind);
-        
         response.status(200).send({
             sendObj
         });
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2351", error));
     }
 });
 

@@ -12,20 +12,21 @@ const { default: mongoose } = require('mongoose')
 const db = mongoose.connection;
 const sequence = require("../utils/sequences");
 
-userRoute.get("/test", getFields.none(), async (request, response) => {
-    try {
-        // console.log("여기??");
-        response.send({
-            user:{
-                name:'test'
-                , email:'test@test.com'
-            }
+// userRoute.get("/test", getFields.none(), async (request, response) => {
+//     try {
+//         // console.log("여기??");
+//         response.send({
+//             user:{
+//                 name:'test'
+//                 , email:'test@test.com'
+//             }
 
-        });
-    } catch (error) {
-        response.status(500).send(error);
-    }
-});
+//         });
+//     } catch (error) {
+//         response.status(500).send(error);
+//     }
+// });
+
 userRoute.post("/signin", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
@@ -99,7 +100,9 @@ userRoute.post("/signin", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-        response.status(500).send(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("1051", error));
+        
     }
 });
 
@@ -180,8 +183,9 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
         });
 
     }catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("1051", error));
     }
 
 });
@@ -238,8 +242,7 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
         });
 
     } catch (error) {
-
-        response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("1001", error));
     }
 });
 
@@ -324,7 +327,8 @@ userRoute.post("/emailverify", getFields.none(), async (request, response) => {
         });
 
     }catch(error){
-        response.status(500).send(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("1011", error));
     }
 
 });
@@ -347,7 +351,8 @@ userRoute.post("/emailverifysave", getFields.none(), async (request, response) =
         });
         
     }catch(error){
-        response.status(500).send(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("1021", error));
     }
 
 });
@@ -383,7 +388,8 @@ userRoute.post("/emailverifynumber", getFields.none(), async (request, response)
         });
 
     }catch(error){
-        response.status(500).send(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("1031", error));
     }
 
 });
@@ -413,7 +419,8 @@ userRoute.post("/updatePassword", getFields.none(), async (request, response) =>
         });
 
     }catch(error){
-        response.status(500).send(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("1041", error));
     }
     
 });
@@ -423,7 +430,7 @@ userRoute.get("/getAccessToken", getFields.none(), async (request, response) => 
     let sendObj = {};
     try {
         //쿠키에 있는 토큰 검증
-        console.log("쿠키에 있는 토큰::",request.cookies.refreshtoken);
+        // console.log("쿠키에 있는 토큰::",request.cookies.refreshtoken);
         if(request.cookies.refreshtoken){
             // console.log("1");
             const refreshtoken = jwtModules.checkRefreshToken(request.cookies.refreshtoken);
@@ -453,7 +460,9 @@ userRoute.get("/getAccessToken", getFields.none(), async (request, response) => 
         response.send({sendObj});
     } catch (error) {
         // console.log("토큰검증실패");
-        response.status(500).send(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2002", error));
+        
     }
 });
 
@@ -494,8 +503,9 @@ userRoute.post("/checkaccessToken", getFields.none(), async (request, response) 
         response.send({sendObj});
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2011", error));
     }
 });
 
@@ -516,8 +526,9 @@ userRoute.get("/logout", getFields.none(), async (request, response) => {
         response.send({sendObj});
 
     } catch (error) {
-        console.log(error);
-        response.status(500).send(error);
+        // console.log(error);
+        // response.status(500).send(error);
+        response.status(500).send(commonModules.sendObjSet("2021", error));
     }
 });
 
