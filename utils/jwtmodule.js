@@ -50,8 +50,9 @@ function checkAccessToken(accesstk){
   let checkToken;
   try{
     checkToken = jwt.verify(accesstk, process.env.ACCESS_TOKEN_SECRET);
+    
   }catch(e){
-    checkToken = "";
+    checkToken = "error";
   }
   return checkToken;
 }

@@ -41,9 +41,9 @@ const db = module.exports = () => {
           useNewUrlParser:true, useUnifiedTopology:true
           }
       )
-      console.log("MongoDB Connection is Successful")
+      // console.log("MongoDB Connection is Successful")
   }catch(error){
-      console.log("MongoDB Connection is failed")
+      // console.log("MongoDB Connection is failed")
   }
 }
 

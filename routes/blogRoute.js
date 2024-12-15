@@ -26,6 +26,8 @@ const axios=require('axios')
 const imgbbUploader = require('imgbb-uploader');
 const AboutMeInfos = require('../models/aboutMeInfoSchemas')
 
+const checkAuth = require('../utils/checkAuth');
+
 // blogRoute.get("/test", getFields.none(), async (request, response) => {
 //     try {
 
@@ -51,8 +53,6 @@ blogRoute.get("/blogInfo", getFields.none(), async (request, response) => {
         let sendObj = {};
         const blog_seq = Number(request.query.blog_seq)
         let BlogInfo = await BlogInfos.findOne({seq:blog_seq});
-
-        console.log(BlogInfo);
 
         let MajorCategory = await MajorCategories.find({blog_id:BlogInfo._id});
 
@@ -212,6 +212,10 @@ blogRoute.get("/bloglistEa", getFields.none(), async (request, response) => {
 blogRoute.post("/fileUpload", async (request, response) => {
     try {
         let sendObj = {};
+        
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
+
         uploadMiddleware(request, response, async function (err) {
             if (err instanceof multer.MulterError) {  
                 // console.log(err.code);
@@ -288,6 +292,9 @@ blogRoute.post("/fileUpload", async (request, response) => {
 blogRoute.post("/write", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
 
         const _temp_num = request.body.randomNum
         const tempImgList = await BlogTempImgs.find({
@@ -418,7 +425,9 @@ blogRoute.get("/blogDetail", getFields.none(), async (request, response) => {
 blogRoute.post("/update", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
-        // console.log(request.body);
+        
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+        if(!chechAuthRes) throw new Error();
 
         const _temp_num = request.body.randomNum
         const tempImgList = await BlogTempImgs.find({
@@ -501,6 +510,9 @@ blogRoute.post("/update", getFields.none(), async (request, response) => {
 blogRoute.post("/blogUpdate", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
         
         let date = new Date().toISOString();
                 
@@ -536,6 +548,9 @@ blogRoute.post("/blogUpdate", getFields.none(), async (request, response) => {
 blogRoute.post("/majorAdd", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
         
         let date = new Date().toISOString();
         
@@ -590,6 +605,9 @@ blogRoute.post("/majorAdd", getFields.none(), async (request, response) => {
 blogRoute.post("/majorDelete", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
         
         const session = await db.startSession();
         session.startTransaction();
@@ -620,6 +638,9 @@ blogRoute.post("/majorDelete", getFields.none(), async (request, response) => {
 blogRoute.post("/subAdd", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
         
         let date = new Date().toISOString();
         let searchSub = await SubCategories.findOne(
@@ -672,6 +693,9 @@ blogRoute.post("/subAdd", getFields.none(), async (request, response) => {
 blogRoute.post("/subDelete", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
         
         const subDeleteRes = await SubCategories.deleteMany({
             seq:request.body.seq
@@ -693,6 +717,9 @@ blogRoute.post("/bloglistdelete", getFields.none(), async (request, response) =>
     try {
         let sendObj = {};
         
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
+
         let date = new Date().toISOString();
         
         let deleteBlogLists = await BlogLists.updateOne(
@@ -722,6 +749,10 @@ blogRoute.post("/bloglistdelete", getFields.none(), async (request, response) =>
 blogRoute.post("/commentwrite", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
+
 
         //startTransaction
         const session = await db.startSession();
@@ -811,6 +842,10 @@ blogRoute.get("/comments", getFields.none(), async (request, response) => {
 blogRoute.post("/commentdelete", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
+
 
         const comment_id = request.body.comment_id;
         const user_email = request.body.user_email;
@@ -916,6 +951,9 @@ blogRoute.get("/commentsseq", getFields.none(), async (request, response) => {
 blogRoute.post("/bloglistlikeupdate", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
 
         let BlogListLike = await BlogListLikes.findOne({
             user_id:request.body.user_id,
@@ -1043,6 +1081,9 @@ blogRoute.post("/commentupdate", getFields.none(), async (request, response) => 
     try {
         let sendObj = {};
 
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
+
         const comment_id = request.body.comment_id;
         const email = request.body.email;
         const comment = request.body.comment;
@@ -1075,6 +1116,9 @@ blogRoute.post("/commentupdate", getFields.none(), async (request, response) => 
 blogRoute.post("/replywrite", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
 
         //startTransaction
         const session = await db.startSession();
@@ -1191,6 +1235,9 @@ blogRoute.post("/replyupdate", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
 
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
+
         const reply_id = request.body.reply_id;
         const reply = request.body.reply;
         const email = request.body.email;
@@ -1224,6 +1271,10 @@ blogRoute.post("/replyupdate", getFields.none(), async (request, response) => {
 blogRoute.post("/replydelete", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
+
         const comment_id = request.body.comment_id;
         const reply_id = request.body.reply_id;
         const email = request.body.email;
@@ -1277,6 +1328,9 @@ blogRoute.post("/replydelete", getFields.none(), async (request, response) => {
 blogRoute.post("/aboutmeupdate", getFields.none(), async (request, response) => {
     try {
         let sendObj = {};
+
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        if(!chechAuthRes) throw new Error();
         
         let date = new Date().toISOString();
         

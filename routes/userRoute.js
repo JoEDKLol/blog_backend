@@ -469,14 +469,6 @@ userRoute.get("/getAccessToken", getFields.none(), async (request, response) => 
 userRoute.post("/checkaccessToken", getFields.none(), async (request, response) => {
     let sendObj = {};
     try {
-        // console.log("checkaccessToken");
-        // console.log(request.headers.accesstoken);
-        // console.log(request.headers.accesstoken);
-        // console.log(request.cookies.refreshtoken);
-        // 헤더에 있는 access 토큰 검증
-        // console.log(request.headers.accesstoken);
-        
-
         if(request.headers.accesstoken){
             const accessToken = jwtModules.checkAccessToken(request.headers.accesstoken);
             // console.log("accessToken::", accessToken);
