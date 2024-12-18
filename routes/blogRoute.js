@@ -28,22 +28,22 @@ const AboutMeInfos = require('../models/aboutMeInfoSchemas')
 
 const checkAuth = require('../utils/checkAuth');
 
-// blogRoute.get("/test", getFields.none(), async (request, response) => {
-//     try {
+blogRoute.get("/test", getFields.none(), async (request, response) => {
+    try {
 
-//         let bloglist = await BlogLists.find({});
+        let bloglist = await BlogLists.find({});
         
-//         response.send({
-//             result:{
-//                 bloglist
-//             }
+        response.send({
+            result:{
+                bloglist
+            }
 
-//         });
+        });
 
-//     } catch (error) {
-//         response.status(500).send(error);
-//     }
-// });
+    } catch (error) {
+        response.status(500).send(error);
+    }
+});
 
 
 
@@ -218,11 +218,13 @@ blogRoute.post("/fileUpload", async (request, response) => {
 
         uploadMiddleware(request, response, async function (err) {
             if (err instanceof multer.MulterError) {  
-                // console.log(err.code);
-                sendObj = commonModules.sendObjSet("2131");
+                console.log(err);
+                // sendObj = commonModules.sendObjSet("2131");
+                throw new Error();
             } else if (err) {      // An unknown error occurred when uploading. 
-                // console.log(err.code);
-                sendObj = commonModules.sendObjSet("2131");
+                console.log(err);
+                // sendObj = commonModules.sendObjSet("2131");
+                throw new Error();
             }    // Everything went fine. 
             else {
 
@@ -271,7 +273,8 @@ blogRoute.post("/fileUpload", async (request, response) => {
                     
                     sendObj = commonModules.sendObjSet("2130", resObj);
                 }catch(e){
-                    sendObj = commonModules.sendObjSet("2132");
+                    // sendObj = commonModules.sendObjSet("2132");
+                    throw new Error();
                 }
             
             }
