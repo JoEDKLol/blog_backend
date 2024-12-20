@@ -176,7 +176,7 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
             sendObj = commonModules.sendObjSet("1050", userObj);
         }
 
-        console.log(sendObj);
+        // console.log(sendObj);
         
         response.status(200).send({
             sendObj

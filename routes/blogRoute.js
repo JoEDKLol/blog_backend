@@ -218,11 +218,11 @@ blogRoute.post("/fileUpload", async (request, response) => {
 
         uploadMiddleware(request, response, async function (err) {
             if (err instanceof multer.MulterError) {  
-                console.log(err);
+                // console.log(err);
                 // sendObj = commonModules.sendObjSet("2131");
                 throw new Error();
             } else if (err) {      // An unknown error occurred when uploading. 
-                console.log(err);
+                // console.log(err);
                 // sendObj = commonModules.sendObjSet("2131");
                 throw new Error();
             }    // Everything went fine. 
@@ -459,7 +459,7 @@ blogRoute.post("/update", getFields.none(), async (request, response) => {
                         fs.unlinkSync("./uploads/" + tempImgList[i].img);
                     }
                 } catch (error) {
-                    console.log(error);
+                    // console.log(error);
                 }
             }else{
                 firstImgArr.push(tempImgList[i].img_url);
@@ -1246,7 +1246,7 @@ blogRoute.post("/replyupdate", getFields.none(), async (request, response) => {
         const email = request.body.email;
         let date = new Date().toISOString();
 
-        console.log(reply_id);
+        // console.log(reply_id);
 
         let updateBlogReplies = await BlogReplies.updateOne(
             {

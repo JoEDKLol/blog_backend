@@ -13,7 +13,7 @@ function retFreshToken(id, email) {
         expiresIn:"30 days",
     });
   }catch(e){
-    console.log(e);
+    // console.log(e);
   }
   
   return  refeshtoken;
@@ -30,7 +30,7 @@ function retAccessToken(id, email) {
         expiresIn:"30m",
     })
   }catch(e){
-    console.log(e);
+    // console.log(e);
   }
   
   return  accessToken;

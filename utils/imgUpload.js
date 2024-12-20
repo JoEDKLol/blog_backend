@@ -11,11 +11,11 @@ const upload = multer({
             done(null, filename);
         },
 		destination(req, file, done) {
-            done(null, "./uploads");
+            done(null, "uploads");
 	    },
     }),
     //file size
-    limits: { fileSize: 1024 * 1024 },
+    limits: { fileSize: 2 * 1024 * 1024 },
 });
 
 const uploadMiddleware = upload.single('file');
