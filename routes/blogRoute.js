@@ -213,18 +213,21 @@ blogRoute.post("/fileUpload", async (request, response) => {
     try {
         let sendObj = {};
         
-        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken)
+        let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
         if(!chechAuthRes) throw new Error();
 
         uploadMiddleware(request, response, async function (err) {
+            const retObj = {
+                errMassage : ""
+            }
             if (err instanceof multer.MulterError) {  
-                // console.log(err);
-                // sendObj = commonModules.sendObjSet("2131");
-                throw new Error();
+                // console.log(err.message);
+                retObj.errMassage = err.message;
+                sendObj = commonModules.sendObjSet("2131", retObj);
+
             } else if (err) {      // An unknown error occurred when uploading. 
-                // console.log(err);
-                // sendObj = commonModules.sendObjSet("2131");
-                throw new Error();
+                retObj.errMassage = err.message;
+                sendObj = commonModules.sendObjSet("2131", retObj);
             }    // Everything went fine. 
             else {
 
@@ -239,8 +242,18 @@ blogRoute.post("/fileUpload", async (request, response) => {
                 
                 // console.log(process.env.IMGBB_KEY);
                 // console.log(fullUrl+request.file.filename);
+                
                 try{
-                    const res = await imgbbUploader(process.env.IMGBB_KEY, "./uploads/"+request.file.filename);
+                    
+                    let res;
+                    try{
+                        res = await imgbbUploader(process.env.IMGBB_KEY, "./uploads/"+request.file.filename);
+                    }catch(e){
+                        retObj.errMassage = "imgBB API returned an error";
+                        sendObj = commonModules.sendObjSet("2131", retObj);
+                    }
+                    
+                    
                     const blogTempImgObj = {
                         user_id:request.body.user_id,
                         temp_num :request.body.temp_num,
@@ -272,11 +285,19 @@ blogRoute.post("/fileUpload", async (request, response) => {
                     }
                     
                     sendObj = commonModules.sendObjSet("2130", resObj);
-                }catch(e){
-                    // sendObj = commonModules.sendObjSet("2132");
-                    throw new Error();
+                }catch(error){
+                    // console.log(request.file.filename);
+                    
                 }
             
+            }
+
+            try {
+                if (fs.existsSync("./uploads/" + request.file.filename)) {
+                    fs.unlinkSync("./uploads/" + request.file.filename);
+                }
+            } catch (error) {
+                // console.log(error);
             }
 
             response.send({
@@ -286,7 +307,7 @@ blogRoute.post("/fileUpload", async (request, response) => {
         })
 
     } catch (error) {
-        // response.status(500).send(error);
+        console.log("여기 표시됨?");
         response.status(500).send(commonModules.sendObjSet("2132", error));
     }
 });
